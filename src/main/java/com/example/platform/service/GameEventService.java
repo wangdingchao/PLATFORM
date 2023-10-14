@@ -14,15 +14,15 @@ import java.util.List;
 public interface GameEventService {
 
 
-    Page<GameEvent> findPage(int page, int size) throws BizException;
-
-    void addGameEvent(GameEvent gameEvent);
-
-    void updateGameEventById(GameEvent gameEvent);
-
-    List<GameEvent> findAll();
-
-    GameEvent findById(Integer id);
-
-    void deleteGameEventById(Integer id);
+//    Page<GameEvent> findPage(int page, int size) throws BizException;
+//
+//    void addGameEvent(GameEvent gameEvent);
+//
+//    void updateGameEventById(GameEvent gameEvent);
+//
+//    List<GameEvent> findAll();
+//
+//    GameEvent findById(Integer id);
+//
+//    void deleteGameEventById(Integer id);
 }

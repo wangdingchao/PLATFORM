@@ -28,41 +28,41 @@ public class GameEventController {
     private GameEventService gameEventService;
 
 
-    @RequestMapping(value = "/allPage", method = RequestMethod.GET)
-    public JsonResult allPage(int page,int size) throws BizException {
-        Page<GameEvent> gameEventPage = gameEventService.findPage(page, size);
-        return JsonResult.success(gameEventPage);
-    }
-
-    @RequestMapping(value = "/addGameEvent", method = RequestMethod.POST)
-    public JsonResult addGameEvent(@RequestBody GameEvent gameEvent) {
-        gameEventService.addGameEvent(gameEvent);
-        return JsonResult.success();
-    }
-
-    @RequestMapping(value = "updateGameEvent", method = RequestMethod.PUT)
-    public JsonResult updateGameEvent(@RequestBody GameEvent gameEvent) {
-        gameEventService.updateGameEventById(gameEvent);
-        return JsonResult.success();
-    }
-
-    @RequestMapping(value = "deleteGameEvent", method = RequestMethod.DELETE)
-    public JsonResult deleteGameEvent(Integer id) {
-        gameEventService.deleteGameEventById(id);
-        return JsonResult.success();
-    }
-
-    @RequestMapping(value = "/findById", method = RequestMethod.GET)
-    public JsonResult findById(Integer id) {
-        GameEvent gameEvent = gameEventService.findById(id);
-        return JsonResult.success(gameEvent);
-    }
-
-    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
-    public JsonResult findAll() {
-        List<GameEvent> all = gameEventService.findAll();
-        return JsonResult.success(all);
-    }
+//    @RequestMapping(value = "/allPage", method = RequestMethod.GET)
+//    public JsonResult allPage(int page,int size) throws BizException {
+//        Page<GameEvent> gameEventPage = gameEventService.findPage(page, size);
+//        return JsonResult.success(gameEventPage);
+//    }
+//
+//    @RequestMapping(value = "/addGameEvent", method = RequestMethod.POST)
+//    public JsonResult addGameEvent(@RequestBody GameEvent gameEvent) {
+//        gameEventService.addGameEvent(gameEvent);
+//        return JsonResult.success();
+//    }
+//
+//    @RequestMapping(value = "updateGameEvent", method = RequestMethod.PUT)
+//    public JsonResult updateGameEvent(@RequestBody GameEvent gameEvent) {
+//        gameEventService.updateGameEventById(gameEvent);
+//        return JsonResult.success();
+//    }
+//
+//    @RequestMapping(value = "deleteGameEvent", method = RequestMethod.DELETE)
+//    public JsonResult deleteGameEvent(Integer id) {
+//        gameEventService.deleteGameEventById(id);
+//        return JsonResult.success();
+//    }
+//
+//    @RequestMapping(value = "/findById", method = RequestMethod.GET)
+//    public JsonResult findById(Integer id) {
+//        GameEvent gameEvent = gameEventService.findById(id);
+//        return JsonResult.success(gameEvent);
+//    }
+//
+//    @RequestMapping(value = "/findAll", method = RequestMethod.GET)
+//    public JsonResult findAll() {
+//        List<GameEvent> all = gameEventService.findAll();
+//        return JsonResult.success(all);
+//    }
 
 
 }

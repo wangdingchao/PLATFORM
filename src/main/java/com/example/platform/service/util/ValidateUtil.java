@@ -5,17 +5,15 @@ import com.example.platform.error.GlobalErrorCode;
 import com.example.platform.error.ValidateClass;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.EmployeeDTO;
-import com.example.platform.pojo.Organization;
 import com.example.platform.pojo.PositionPower;
 import com.example.platform.pojo.constants.ComFinalParams;
-import com.example.platform.pojo.enums.DataPrivilege;
 import com.example.platform.service.IPositionService;
+import com.example.platform.utils.JedisUtil;
+import com.example.platform.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 /**
  * 作       者：zhaoxin

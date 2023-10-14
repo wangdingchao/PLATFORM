@@ -1,27 +1,24 @@
 
-package com.example.platform.service;
+package com.example.platform.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.example.platform.Constants;
-import com.example.platform.exception.BizException;
 import com.example.platform.mapper.AuthMapper;
 import com.example.platform.mapper.OrganizationMapper;
 import com.example.platform.mapper.PositionMapper;
 import com.example.platform.pojo.*;
 import com.example.platform.pojo.constants.ComFinalParams;
 import com.example.platform.pojo.enums.DataPrivilege;
-import com.example.platform.service.util.JedisUtil;
-import com.example.platform.service.util.JsonUtil;
+import com.example.platform.service.IPositionService;
+import com.example.platform.utils.JedisUtil;
+import com.example.platform.utils.JsonUtil;
 import com.example.platform.service.util.ValidateUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 作       者：zhaoxin

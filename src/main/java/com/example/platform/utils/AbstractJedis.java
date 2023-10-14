@@ -1,4 +1,4 @@
-package com.example.platform.service.util;
+package com.example.platform.utils;
 
 import redis.clients.jedis.JedisPubSub;
 

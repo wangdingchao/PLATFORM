@@ -22,33 +22,33 @@ public class GameEventServiceImpl implements GameEventService {
     @Autowired
     private GameEventMapper gameEventMapper;
 
-    @Override
-    public Page<GameEvent> findPage(int page,int size) throws BizException {
-        return gameEventMapper.selectPage(new Page<>(page,size),null);
-    }
-
-    @Override
-    public void addGameEvent(GameEvent gameEvent) {
-        gameEventMapper.insert(gameEvent);
-    }
-
-    @Override
-    public void updateGameEventById(GameEvent gameEvent) {
-        gameEventMapper.updateById(gameEvent);
-    }
-
-    @Override
-    public List<GameEvent> findAll() {
-        return gameEventMapper.selectList(null);
-    }
-
-    @Override
-    public GameEvent findById(Integer id) {
-        return gameEventMapper.selectById(id);
-    }
-
-    @Override
-    public void deleteGameEventById(Integer id) {
-        gameEventMapper.deleteById(id);
-    }
+//    @Override
+//    public Page<GameEvent> findPage(int page,int size) throws BizException {
+//        return gameEventMapper.selectPage(new Page<>(page,size),null);
+//    }
+//
+//    @Override
+//    public void addGameEvent(GameEvent gameEvent) {
+//        gameEventMapper.insert(gameEvent);
+//    }
+//
+//    @Override
+//    public void updateGameEventById(GameEvent gameEvent) {
+//        gameEventMapper.updateById(gameEvent);
+//    }
+//
+//    @Override
+//    public List<GameEvent> findAll() {
+//        return gameEventMapper.selectList(null);
+//    }
+//
+//    @Override
+//    public GameEvent findById(Integer id) {
+//        return gameEventMapper.selectById(id);
+//    }
+//
+//    @Override
+//    public void deleteGameEventById(Integer id) {
+//        gameEventMapper.deleteById(id);
+//    }
 }

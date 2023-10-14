@@ -1,10 +1,11 @@
-package com.example.platform.service.util;
+package com.example.platform.utils;
 
 import com.example.platform.pojo.ScanKeyResult;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.*;
 import redis.clients.jedis.params.SetParams;
 

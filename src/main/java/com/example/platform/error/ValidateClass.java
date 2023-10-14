@@ -5,7 +5,7 @@ import com.example.platform.exception.BizException;
 import com.example.platform.pojo.EmployeeDTO;
 import com.example.platform.pojo.UserDTO;
 import com.example.platform.pojo.constants.ComFinalParams;
-import com.example.platform.service.util.JsonUtil;
+import com.example.platform.utils.JsonUtil;
 import com.example.platform.utils.StringUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;

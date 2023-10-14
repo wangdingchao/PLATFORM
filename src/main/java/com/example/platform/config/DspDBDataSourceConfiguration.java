@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@MapperScan(basePackages = {"com.sogal.dealer.domain.mapper", "com.sogal.common.dao","com.sogal.common.domain.mapper"},
+@MapperScan(basePackages = {"com.example.platform.mapper"},
         sqlSessionFactoryRef = "dspdbSqlSessionFactory")
 public class DspDBDataSourceConfiguration {
 
@@ -44,10 +44,10 @@ public class DspDBDataSourceConfiguration {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setMapperLocations(ArrayUtils.addAll(
-                new PathMatchingResourcePatternResolver().getResources("classpath*:com/sogal/dealer/domain/mapper/*.xml"),
+                new PathMatchingResourcePatternResolver().getResources("classpath*:com.example.platform.mapper/*.xml"),
                 new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/*-mapper.xml")
         ));
-        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml"));
+//        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml"));
         return bean.getObject();
     }
 

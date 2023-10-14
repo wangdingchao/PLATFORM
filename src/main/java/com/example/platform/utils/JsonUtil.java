@@ -1,4 +1,4 @@
-package com.example.platform.service.util;
+package com.example.platform.utils;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
