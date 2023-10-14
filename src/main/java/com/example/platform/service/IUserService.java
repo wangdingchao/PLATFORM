@@ -186,7 +186,7 @@ public interface IUserService {
      * @param user
      *      用户信息的封装de对象
      */
-    void  insert(UserDTO user) throws BizException;
+//    void  insert(UserDTO user) throws BizException;
 
     /**
      * 修改用户信息
@@ -207,7 +207,7 @@ public interface IUserService {
      * @param mobiles
      *      用户手机号集合
      */
-    List<UserDTO> findByMobiles(List<String> mobiles);
+//    List<UserDTO> findByMobiles(List<String> mobiles);
 
     /**
      * 根据条件查询用户信息

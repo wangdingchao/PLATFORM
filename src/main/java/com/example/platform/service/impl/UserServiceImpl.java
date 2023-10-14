@@ -558,7 +558,7 @@ public class UserServiceImpl implements IUserService {
         }
         user.setMenuPrivilege(map);
         setDataScope(user);
-        Long time = new Date().getTime();
+        Long time = System.currentTimeMillis();
 //        jedisUtil.set(ComFinalParams.AUTHORIZE_TAG + userId, time.toString());
         user.setNewPrivilegeTime(time);
         return user;
@@ -600,7 +600,7 @@ public class UserServiceImpl implements IUserService {
             }
             position.setBizPrivileges(map);
 
-            position.setTags(contentMapper.listTagOfRealm(com.example.platform.pojo.Realm.POSITION, position.getPositionId()));
+//            position.setTags(contentMapper.listTagOfRealm(com.example.platform.pojo.Realm.POSITION, position.getPositionId()));
         }
         return positions;
     }

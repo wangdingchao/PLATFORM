@@ -2,9 +2,6 @@
 package com.example.platform.mapper;
 
 import com.example.platform.pojo.Organization;
-import com.sogal.common.domain.dealer.*;
-import com.sogal.oauth.domain.dingDing.DeptRelationship;
-import com.sogal.oauth.domain.dingDing.EmpRelationship;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

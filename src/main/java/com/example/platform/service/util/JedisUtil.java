@@ -1,6 +1,6 @@
 package com.example.platform.service.util;
 
-import com.sogal.common.domain.jedis.ScanKeyResult;
+import com.example.platform.pojo.ScanKeyResult;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import redis.clients.jedis.params.SetParams;
 
 import java.util.*;
 
-import static com.sogal.common.util.ExceptionDescribe.MESSAGE;
+import static com.example.platform.utils.ExceptionDescribe.MESSAGE;
 
 /**
  * Created by xiaoxuwang on 2018/2/21.
@@ -268,7 +268,7 @@ public class JedisUtil implements AbstractJedis {
     @Override
     public Long getTTL(String key) {
         Jedis jedis = null;
-        long ttl = 0l;
+        long ttl = 0;
         try {
             jedis = jedisSentinelPool.getResource();
             ttl = jedis.ttl(key);
@@ -658,7 +658,7 @@ public class JedisUtil implements AbstractJedis {
     @Override
     public long setnx(String key, String value) {
         Jedis jedis = null;
-        long result = 0l;
+        long result = 0;
         try {
             jedis = jedisSentinelPool.getResource();
             result = jedis.setnx(key, value);

@@ -1,6 +1,5 @@
 package com.example.platform.pojo;
 
-import com.sogal.common.domain.user.UserType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

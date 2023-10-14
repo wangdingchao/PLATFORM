@@ -1,40 +1,20 @@
 
 package com.example.platform.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.example.platform.Constants;
 import com.example.platform.exception.BizException;
+import com.example.platform.mapper.AuthMapper;
 import com.example.platform.mapper.OrganizationMapper;
 import com.example.platform.mapper.PositionMapper;
 import com.example.platform.pojo.*;
 import com.example.platform.pojo.constants.ComFinalParams;
+import com.example.platform.pojo.enums.DataPrivilege;
+import com.example.platform.service.util.JedisUtil;
 import com.example.platform.service.util.JsonUtil;
+import com.example.platform.service.util.ValidateUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.sogal.common.annotation.ExceptionSendDingTalk;
-import com.sogal.common.dao.CommonOrganizationMapper;
-import com.sogal.common.domain.ComFinalParams;
-import com.sogal.common.domain.Realm;
-import com.sogal.common.domain.criteria.PageInfo;
-import com.sogal.common.domain.dealer.EmployeeDTO;
-import com.sogal.common.domain.dealer.EmployeeOrganization;
-import com.sogal.common.domain.dealer.Organization;
-import com.sogal.common.domain.dealer.Position;
-import com.sogal.common.domain.sales.BrandLabel;
-import com.sogal.common.domain.sales.Company;
-import com.sogal.common.domain.tag.Tag;
-import com.sogal.common.dto.PagedList;
-import com.sogal.common.exception.BizException;
-import com.sogal.common.privilege.*;
-import com.sogal.common.util.JedisUtil;
-import com.sogal.common.util.JsonUtil;
-import com.sogal.common.util.StringUtil;
-import com.sogal.oauth.Constants;
-import com.sogal.oauth.domain.mapper.*;
-import com.sogal.oauth.error.DealerErrorCode;
-import com.sogal.oauth.service.log.PositionOperateLogHandler;
-import com.sogal.oauth.service.model.EmpFileOperateLogVO;
-import com.sogal.oauth.web.controller.req.ReqHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,27 +36,27 @@ public class PositionServiceImpl implements IPositionService {
     private PositionMapper positionMapper;
     @Autowired
     private OrganizationMapper organizationMapper;
-    @Autowired
-    private CommonOrganizationMapper CommonOrganizationMapper;
-    @Autowired
-    private TeamMapper teamMapper;
-    @Autowired
-    private EmployeeOrganizationMapper employeeOrganizationMapper;
-    @Autowired
-    private ContentMapper contentMapper;
+//    @Autowired
+//    private CommonOrganizationMapper CommonOrganizationMapper;
+//    @Autowired
+//    private TeamMapper teamMapper;
+//    @Autowired
+//    private EmployeeOrganizationMapper employeeOrganizationMapper;
+//    @Autowired
+//    private ContentMapper contentMapper;
     @Autowired
     private AuthMapper authMapper;
     @Autowired
     private JedisUtil jedisUtil;
     @Autowired
     private ValidateUtil validateUtil;
-    @Autowired
-    private PositionPrivilegeOrgRelationMapper privilegeOrgRelationMapper;
+//    @Autowired
+//    private PositionPrivilegeOrgRelationMapper privilegeOrgRelationMapper;
 
 //    @Autowired
 //    private SyncEmpOrgFromFileService syncEmpOrgFromFileService;
-    @Autowired
-    private EmployeeFileLogMapper employeeFileLogMapper;
+//    @Autowired
+//    private EmployeeFileLogMapper employeeFileLogMapper;
 //
 //    @Override
 //    @Transactional(rollbackFor = {BizException.class, Throwable.class})
@@ -463,56 +443,60 @@ public class PositionServiceImpl implements IPositionService {
 //        return positions;
 //    }
 //
-//    private Set<String> getResultIds(DataPrivilege dataPrivilege, String empId, String orgId, Organization organization,
-//                                     String positionId, String serviceType) {
-//        Set<String> resultIds = new HashSet<>();
-//        switch (dataPrivilege) {
-//            case I:
-//                resultIds.add(empId);
-//                break;
-//            case ALL:
-//                break;
-//            case DEPARTMENT:
-//                resultIds.add(orgId);
-//                break;
-//            case WE:
-//                if (StringUtils.isBlank(organization.getMilanaCode())
-//                        && StringUtils.isBlank(organization.getSchmidtCode())
-//                        && StringUtils.isBlank(organization.getSogalCode())) {
-//                    List<EmployeeOrganization> condition = employeeOrganizationMapper.findByCondition(null, orgId, null);
-//                    Set<String> set = new HashSet<>();
-//                    for (EmployeeOrganization relation : condition) {
-//                        set.add(relation.getEmpId());
-//                    }
-//                    resultIds.addAll(set);
-//                    resultIds.add(empId);
-//                } else {
-//                    resultIds = teamMapper.findEmpIdByParentId(empId, orgId);
-//                    List<String> list = new ArrayList(resultIds);
-//                    if (!list.isEmpty()) {
-//                        for (String id : list) {
-//                            Set<String> emp = teamMapper.findEmpIdByParentId(id, orgId);
-//                            resultIds.addAll(emp);
-//                        }
-//                    }
-//                    resultIds.add(empId);
-//                }
-//                break;
-//            case WEDEPART:
-//                resultIds = organizationMapper.findIdByCodePath(organization.getCodePath());
-//                resultIds.add(orgId);
-//                break;
-//            case WEANDASSIGNDEPART:
-//                resultIds = organizationMapper.findIdByCodePath(organization.getCodePath());
-//                resultIds.add(orgId);
-//                List<String> extraOrgIds = privilegeOrgRelationMapper.selectExtraOrgIdsByPositionIdAndServiceType(positionId, serviceType);
-//                if(CollectionUtils.isNotEmpty(extraOrgIds)){
-//                    resultIds.addAll(extraOrgIds);
-//                }
-//                break;
-//            default:
-//                break;
-//        }
-//        return resultIds;
-//    }
+    private Set<String> getResultIds(DataPrivilege dataPrivilege, String empId, String orgId, Organization organization,
+                                     String positionId, String serviceType) {
+        Set<String> resultIds = new HashSet<>();
+        switch (dataPrivilege) {
+            case I:
+                resultIds.add(empId);
+                break;
+            case ALL:
+                break;
+            case DEPARTMENT:
+                resultIds.add(orgId);
+                break;
+            case WE:
+                if (StringUtils.isBlank(organization.getMilanaCode())
+                        && StringUtils.isBlank(organization.getSchmidtCode())
+                        && StringUtils.isBlank(organization.getSogalCode())) {
+                    List<EmployeeOrganization> condition = new ArrayList<>();
+//                            employeeOrganizationMapper.findByCondition(null, orgId, null);
+                    Set<String> set = new HashSet<>();
+                    for (EmployeeOrganization relation : condition) {
+                        set.add(relation.getEmpId());
+                    }
+                    resultIds.addAll(set);
+                    resultIds.add(empId);
+                } else {
+                    resultIds = new HashSet<>();
+//                            teamMapper.findEmpIdByParentId(empId, orgId);
+                    List<String> list = new ArrayList(resultIds);
+                    if (!list.isEmpty()) {
+                        for (String id : list) {
+                            Set<String> emp = new HashSet<>();
+//                                    teamMapper.findEmpIdByParentId(id, orgId);
+                            resultIds.addAll(emp);
+                        }
+                    }
+                    resultIds.add(empId);
+                }
+                break;
+            case WEDEPART:
+                resultIds = organizationMapper.findIdByCodePath(organization.getCodePath());
+                resultIds.add(orgId);
+                break;
+            case WEANDASSIGNDEPART:
+                resultIds = organizationMapper.findIdByCodePath(organization.getCodePath());
+                resultIds.add(orgId);
+                List<String> extraOrgIds = new ArrayList<>();
+//                        privilegeOrgRelationMapper.selectExtraOrgIdsByPositionIdAndServiceType(positionId, serviceType);
+                if(CollectionUtils.isNotEmpty(extraOrgIds)){
+                    resultIds.addAll(extraOrgIds);
+                }
+                break;
+            default:
+                break;
+        }
+        return resultIds;
+    }
 }
