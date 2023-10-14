@@ -9,10 +9,9 @@ import lombok.Getter;
 @Getter
 public enum UserType implements BaseEnum {
 
-    C("客户"),
     E("员工"),
-    H("合作方"),
-    U("普通用户");
+    V("志愿者"),
+    A("运动员");
 
     private String message;
 

@@ -5,8 +5,11 @@ import com.example.platform.error.OAuthErrorCode;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.*;
 import com.example.platform.pojo.enums.AppIdEnum;
+import com.example.platform.pojo.enums.MenuScope;
 import com.example.platform.pojo.enums.TerminalType;
+import com.example.platform.service.IUserService;
 import com.example.platform.service.OAuthService;
+import com.example.platform.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +33,7 @@ import java.util.stream.Collectors;
 public class OAuthServiceImpl implements OAuthService {
 
 //    private final JedisUtil jedisUtil;
-//    private final IUserService userService;
+    private final IUserService userService;
 //    private final IRoleService roleService;
 //    private final OfficialAccountService officialAccountService;
 //    private final PermissionService permissionService;
@@ -87,8 +90,8 @@ public class OAuthServiceImpl implements OAuthService {
 //            if (AppScopeEnum.DSP.name().equals(scope) || AppScopeEnum.SCM.name().equals(scope) || AppScopeEnum.PROJ.name().equals(scope)) {
 //                appSource.setScope("");
 //            }
-//            payload = userService.login(loginBody.getMobile(), loginBody.getPassword(), UserType.E, userLoginLog, terminal, MenuScope.getEnum(""));
             //  任务  ，完成 数据库表的设计， 参考role 实体类， 实现对用户手机号，密码的校验  （ 密码需要加密，可以自己在网上找加密算法）
+            payload = userService.login(loginBody.getMobile(), loginBody.getPassword(), UserType.E, userLoginLog, terminal, MenuScope.getEnum(""));
 
 
 //            log.info("payload：{}", JSONUtil.toJsonStr(payload));

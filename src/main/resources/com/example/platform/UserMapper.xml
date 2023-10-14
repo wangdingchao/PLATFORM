@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.platform.mapper.UserMapper">
+
+    <resultMap type="com.example.platform.pojo.UserDTO" id="user">
+        <id column="ID" property="id"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="IMAGE_URL" property="imageUrl"/>
+        <result column="WECHAT_OPEN_ID" property="wechatOpenId"/>
+        <result column="WECHAT_UNION_ID" property="unionId"/>
+        <result column="VALID" property="valid"/>
+        <result column="TYPE" property="type"/>
+        <result column="PASSWORD" property="password"/>
+        <result column="LAST_LOGIN_TIME" property="lastLoginTime"/>
+        <result column="KUJIALE" property="kujiale"/>
+        <association property="employee" javaType="com.example.platform.pojo.EmployeeDTO">
+            <id column="ID" property="id"/>
+            <id column="ORG_ID" property="orgId"/>
+            <id column="POSITION_ID" property="positionId"/>
+            <result column="NAME" property="name"/>
+            <result column="STATUS" property="status"/>
+            <association property="organization" javaType="com.example.platform.pojo.Organization">
+                <result column="ORG_NAME" property="name"/>
+            </association>
+            <association property="position" javaType="com.example.platform.pojo.Position">
+                <result column="POSITION_NAME" property="name"/>
+            </association>
+        </association>
+    </resultMap>
+
+    <sql id="user">
+        `user`.ID,
+        `user`.MOBILE,
+        `user`.IMAGE_URL,
+        `user`.WECHAT_OPEN_ID,
+        `user`.WECHAT_UNION_ID,
+        `user`.TYPE,
+        `user`.PASSWORD,
+        `user`.LAST_LOGIN_TIME,
+        if(`user`.VALID = '1' ,1, 0) AS VALID,
+        `user`.KUJIALE
+    </sql>
+
+    <select id="login" resultMap="user">
+        select
+            <include refid="user" />
+        from SYS_USER `user`
+        where MOBILE = #{mobile} and PASSWORD = #{password} and TYPE = #{type} and VALID = '1';
+    </select>
+
+    <update id="updateLastLoginTime">
+        UPDATE SYS_USER set LAST_LOGIN_TIME = now() where MOBILE = #{mobile} and TYPE = #{type} and VALID = '1'
+        ;
+    </update>
+
+    <update id="updatePassword">
+        update SYS_USER set PASSWORD = #{newPass} where MOBILE = #{mobile} and TYPE = #{type} and VALID = '1';
+    </update>
+
+    <update id="updateOpenId">
+        UPDATE SYS_USER SET IMAGE_URL = #{imageUrl}, WECHAT_OPEN_ID = #{openId} WHERE ID = #{id};
+    </update>
+
+    <update id="updateStatus">
+        UPDATE SYS_USER
+        <set>
+            <choose>
+                <when test="status">
+                    VALID = '1'
+                </when>
+                <otherwise>
+                    VALID = ID
+                </otherwise>
+            </choose>
+        </set>
+         WHERE ID = #{id};
+    </update>
+
+    <update id="updateKujiale">
+        UPDATE SYS_USER SET KUJIALE = #{status} WHERE ID = #{id};
+    </update>
+
+    <update id="resetPwd">
+        UPDATE SYS_USER SET PASSWORD = #{pwd} WHERE ID = #{id};
+    </update>
+
+    <update id="updateImgByOpenId">
+        UPDATE SYS_MINI_APP_USER SET IMAGE_URL = #{imageUrl} WHERE OPEN_ID = #{openId};
+    </update>
+
+    <update id="updateUnionId">
+        UPDATE SYS_MINI_APP_USER SET UNION_ID = #{unionId} WHERE OPEN_ID = #{openId};
+    </update>
+
+    <update id="update" parameterType="com.sogal.common.domain.user.UserDTO">
+        UPDATE SYS_USER
+        <trim prefix="set" suffixOverrides=",">
+            <if test="mobile != null and mobile != ''">
+                MOBILE = #{mobile},
+            </if>
+            <if test="type != null">
+                TYPE = #{type},
+            </if>
+        </trim>
+        WHERE ID = #{id}
+    </update>
+
+    <select id="findByMobile" resultMap="user">
+        select <include refid="user" /> from SYS_USER `user` where MOBILE = #{mobile} and TYPE = #{type} and VALID = '1';
+    </select>
+
+    <select id="findById" resultMap="user">
+        select
+            `user`.ID,
+            `user`.MOBILE,
+            `user`.TYPE,
+            `user`.WECHAT_OPEN_ID,
+            `user`.IMAGE_URL,
+            if(`user`.VALID = '1' ,1, 0) AS VALID
+        from SYS_USER `user` where ID = #{id};
+    </select>
+
+    <select id="findNameById" resultType="string">
+        SELECT `NAME` from DEALER_EMPLOYEE  where id = #{id};
+    </select>
+
+    <select id="findByOpenId" resultMap="user">
+        select <include refid="user" /> from SYS_USER `user` where WECHAT_OPEN_ID = #{openId} AND TYPE = #{type} AND VALID = '1';
+    </select>
+
+    <select id="findIdByRole" resultType="string">
+        SELECT
+            sur.USER_ID
+        FROM
+            SYS_ROLE role
+        LEFT JOIN SYS_USER_ROLE sur ON sur.ROLE_ID = role.ID
+        WHERE
+            role.ISALIVE = TRUE
+        AND role.ID = #{roleId}
+        UNION
+        SELECT
+            deo.EMP_ID
+        FROM
+            SYS_ROLE role
+        LEFT JOIN DEALER_POSITION_ROLE pos ON pos.ROLE_ID = role.ID
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION deo ON pos.POSITION_ID = deo.POSITION_ID
+        WHERE
+            role.ISALIVE = TRUE
+        AND deo.VALID = TRUE
+        AND role.ID = #{roleId};
+    </select>
+
+    <select id="findByMobiles" resultType="com.sogal.common.domain.user.UserDTO">
+        SELECT
+        user.ID,
+        user.MOBILE,
+        user.TYPE,
+        user.WECHAT_OPEN_ID,
+        user.IMAGE_URL,
+        if(user.VALID = '1' ,1, 0) AS VALID
+        FROM
+        SYS_USER user
+        WHERE MOBILE IN
+        <foreach collection="mobiles" item="mobile" separator="," close=")" open="(">
+            #{mobile}
+        </foreach>
+        AND VALID = '1';
+    </select>
+
+    <select id="findLikeByMobile" resultType="com.sogal.common.domain.user.UserDTO">
+        SELECT
+            <include refid="user"/>, user.LAST_LOGIN_TIME
+        FROM
+            SYS_USER user
+        WHERE
+            VALID = '1'
+                <if test="mobile != null">
+                    AND MOBILE like concat('%', #{mobile}, '%')
+                </if>
+                <if test="type != null">
+                    AND TYPE = #{type}
+                </if>
+        limit #{offset},#{size}
+    </select>
+
+    <select id="findPageByCondition" resultMap="user">
+        SELECT
+        user.ID, user.WECHAT_OPEN_ID, user.TYPE, user.LAST_LOGIN_TIME, if(user.VALID = '1', 1, 0) AS VALID, user.MOBILE, user.KUJIALE,
+        emp.NAME, emp.STATUS,
+        eop.ORG_ID, org.NAME AS ORG_NAME,
+        eop.POSITION_ID, pos.NAME AS POSITION_NAME
+        FROM SYS_USER user
+        LEFT JOIN DEALER_EMPLOYEE emp ON user.ID = emp.ID
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID AND eop.VALID = TRUE AND eop.PRIMARY = TRUE
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID AND pos.VALID = TRUE
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID AND org.VALID = TRUE
+        <where>
+            <trim suffixOverrides="AND">
+                <if test="name != null">
+                    emp.NAME LIKE concat('%', #{name} ,'%') AND
+                </if>
+                <if test="mobile != null">
+                    user.MOBILE LIKE concat('%', #{mobile} ,'%') AND
+                </if>
+                <if test="positionId != null">
+                    eop.POSITION_ID = #{positionId} AND
+                </if>
+                <if test="organizationId != null">
+                    eop.ORG_ID = #{organizationId} AND
+                </if>
+            </trim>
+        </where>
+        ORDER BY emp.MOBILE LIMIT #{offset}, #{size};
+    </select>
+
+    <select id="countByCondition" resultType="int">
+        SELECT
+          COUNT(user.ID)
+        FROM SYS_USER user
+        LEFT JOIN DEALER_EMPLOYEE emp ON user.ID = emp.ID
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID AND eop.VALID = TRUE AND eop.PRIMARY = TRUE
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID AND pos.VALID = TRUE
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID AND org.VALID = TRUE
+        <where>
+            <trim suffixOverrides="AND">
+                <if test="name != null">
+                    emp.NAME LIKE concat('%', #{name} ,'%') AND
+                </if>
+                <if test="mobile != null">
+                    user.MOBILE LIKE concat('%', #{mobile} ,'%') AND
+                </if>
+                <if test="positionId != null">
+                    eop.POSITION_ID = #{positionId} AND
+                </if>
+                <if test="organizationId != null">
+                    eop.ORG_ID = #{organizationId} AND
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <select id="countLikeByMobile" resultType="int">
+        SELECT
+            count(ID)
+        FROM
+            SYS_USER
+        WHERE
+            VALID = '1'
+                <if test="mobile != null">
+                    AND MOBILE = #{mobile}
+                </if>
+                <if test="type != null">
+                    AND TYPE = #{type}
+                </if>
+    </select>
+
+    <insert id="insert" parameterType="com.sogal.common.domain.user.UserDTO">
+        insert into SYS_USER(ID, MOBILE, PASSWORD, TYPE, VALID) VALUES (#{id}, #{mobile}, #{password}, #{type}, TRUE);
+    </insert>
+
+    <insert id="insertMiniAppUser" parameterType="com.sogal.oauth.domain.MiniAppUser">
+        INSERT INTO SYS_MINI_APP_USER (ID, USER_ID, OPEN_ID, UNION_ID, IMAGE_URL, SCOPE)
+        VALUES(#{id}, #{userId}, #{openId}, #{unionId}, #{imageUrl}, #{scope})
+    </insert>
+
+    <select id="findMiniAppUserByOpenId" resultType="com.sogal.oauth.domain.MiniAppUser">
+        SELECT ID, USER_ID, OPEN_ID, UNION_ID, IMAGE_URL, SCOPE FROM SYS_MINI_APP_USER WHERE OPEN_ID = #{openId};
+    </select>
+
+</mapper>

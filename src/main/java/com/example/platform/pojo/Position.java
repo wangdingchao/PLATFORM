@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Transient;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 @Data
@@ -65,6 +66,10 @@ public class Position implements Serializable {
 
     @Transient
     private List<String> extraOrgIds;
+
+    private String positionId;
+
+    private Map<String,List<String>> bizPrivileges;
 
     public Position(String name) {
         this.name = name;

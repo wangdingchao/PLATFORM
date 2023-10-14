@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+    <mapper namespace="com.example.platform.mapper.AuthMapper">
+
+    <select id="findRolePrivilege" parameterType="string" resultType="string">
+        select PRIVILEGE from SYS_ROLE_PRIVILEGE srp
+        LEFT JOIN SYS_ROLE sr
+        ON srp.ROLE_ID = sr.ID
+        where sr.ISALIVE = TRUE AND srp.ROLE_ID in
+        <foreach collection="roleIds" item="roleId" separator="," open="(" close=")">
+            #{roleId}
+        </foreach>
+    </select>
+
+    <select id="findByRole" resultType="string">
+          select PRIVILEGE from SYS_ROLE_PRIVILEGE where ROLE_ID = #{roleId}
+    </select>
+
+    <select id="findByUser" resultType="string">
+        SELECT
+            srp.PRIVILEGE
+        FROM
+            SYS_ROLE_PRIVILEGE srp
+        LEFT JOIN SYS_ROLE role ON srp.ROLE_ID = role.ID
+        LEFT JOIN SYS_USER_ROLE sur ON sur.ROLE_ID = role.ID
+        LEFT JOIN SYS_MENU menu ON menu.PRIVILEGE = srp.PRIVILEGE
+        WHERE
+            role.ISALIVE = TRUE
+        AND sur.USER_ID = #{userId}
+        <if test="scope != null">
+            AND menu.SCOPE = #{scope}
+        </if>
+        UNION
+        SELECT
+            srp.PRIVILEGE
+        FROM
+            SYS_ROLE_PRIVILEGE srp
+        LEFT JOIN SYS_ROLE role ON srp.ROLE_ID = role.ID
+        LEFT JOIN DEALER_POSITION_ROLE pos ON pos.ROLE_ID = role.ID
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION deo ON pos.POSITION_ID = deo.POSITION_ID
+        LEFT JOIN DEALER_EMPLOYEE emp ON deo.EMP_ID = emp.ID
+        LEFT JOIN SYS_MENU menu ON menu.PRIVILEGE = srp.PRIVILEGE
+        WHERE
+            role.ISALIVE = TRUE
+        AND emp.ID = #{userId}
+        AND deo.VALID = TRUE
+        <if test="scope != null">
+            AND menu.SCOPE = #{scope}
+        </if>
+    </select>
+
+    <select id="findDataPowerByPositionId" resultType="com.sogal.common.privilege.DataPower">
+        SELECT POSITION_ID, SERVICE_TYPE, DATA_PRIVILEGE FROM SYS_DATA_PRIVILEGE WHERE POSITION_ID = #{positionId};
+    </select>
+
+    <delete id="deleteByRole">
+        DELETE FROM SYS_ROLE_PRIVILEGE WHERE ROLE_ID = #{roleId};
+    </delete>
+
+    <delete id="deleteByPrivilege">
+        DELETE b
+        FROM sys_role a
+        LEFT JOIN sys_role_privilege b ON a.ID = b.ROLE_ID
+        WHERE b.PRIVILEGE = #{privilege}
+          AND a.COMPANY_CODE = #{companyCode}
+    </delete>
+
+    <delete id="deleteDataPower">
+        delete from SYS_DATA_PRIVILEGE where POSITION_ID = #{positionId};
+    </delete>
+
+    <insert id="addRolePrivileges">
+        INSERT INTO SYS_ROLE_PRIVILEGE (ROLE_ID, PRIVILEGE)
+        VALUES
+        <foreach collection="privileges" separator="," item="privilege">
+            (#{roleId}, #{privilege})
+        </foreach>
+    </insert>
+
+    <insert id="addPrivilegeRoles">
+        INSERT INTO SYS_ROLE_PRIVILEGE (ROLE_ID, PRIVILEGE)
+        VALUES
+        <foreach collection="roles" separator="," item="role">
+            (#{role}, #{privilege})
+        </foreach>
+    </insert>
+
+    <insert id="addDataPower">
+        insert into SYS_DATA_PRIVILEGE (POSITION_ID, SERVICE_TYPE, DATA_PRIVILEGE)
+        values
+        <foreach collection="dataPowers" separator="," item="dataPower">
+            (#{dataPower.positionId}, #{dataPower.serviceType}, #{dataPower.dataPrivilege})
+        </foreach>
+    </insert>
+
+<!--    <select id="findByAgent" resultType="com.sogal.common.domain.callCenter.CallCenterAgent">-->
+<!--        SELECT a.* FROM CALL_CENTER_AGENT a-->
+<!--        INNER JOIN DEALER_EMPLOYEE b ON a.EMP_ID = b.ID-->
+<!--        WHERE a.EMP_ID = #{userId} AND b.STATUS &lt;&gt; 'DIMISSION' AND a.VALID = true-->
+<!--        ORDER BY a.GMT_CREATE DESC LIMIT 1-->
+<!--    </select>-->
+
+</mapper>
