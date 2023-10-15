@@ -1,7 +1,7 @@
 package com.example.platform;
 /**
- * 作       者：wanglingxiao
- * 最后修改时间：2018-1-22
+ * 作       者：wangdingchao
+ * 最后修改时间：2023-10-15
  * 描      述：日志记录开头
  *
  */

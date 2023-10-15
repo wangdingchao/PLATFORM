@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-//@MapperScan({"com.example.platform.mapper"})
+@MapperScan({"com.example.platform.mapper"})
 @EnableJedis
 public class PlatformApplication {
 

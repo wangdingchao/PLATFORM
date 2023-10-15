@@ -29,8 +29,8 @@ public class ValidateUtil extends ValidateClass {
 //    private RabbitmqPublish rabbitmqPublish;
 //    @Autowired
 //    private OrganizationMapper organizationMapper;
-    @Autowired
-    private IPositionService positionService;
+//    @Autowired
+//    private IPositionService positionService;
     @Autowired
     private JedisUtil jedisUtil;
 
@@ -123,15 +123,15 @@ public class ValidateUtil extends ValidateClass {
             return JsonUtil.stringToBean(strJson, new TypeReference<PositionPower>() {
             });
         } catch (Throwable e) {
-            PositionPower positionPower = positionService.findPositionPower(employee.getId(), employee.getPositionId(), employee.getOrganizationId(),
-                     null);
-
-            if (null == positionPower) {
-                log.error(Constants.SERVICE_LOG_TAG + ":用户权限不足,错误码={},错误位置:channel-ValidateUtil-getPriviliges,"
-                        , GlobalErrorCode.USER_NOT_PRIVILEGE);
-                throw new BizException(GlobalErrorCode.USER_NOT_PRIVILEGE);
-            }
-            return positionPower;
+//            PositionPower positionPower = positionService.findPositionPower(employee.getId(), employee.getPositionId(), employee.getOrganizationId(),
+//                     null);
+//
+//            if (null == positionPower) {
+//                log.error(Constants.SERVICE_LOG_TAG + ":用户权限不足,错误码={},错误位置:channel-ValidateUtil-getPriviliges,"
+//                        , GlobalErrorCode.USER_NOT_PRIVILEGE);
+//                throw new BizException(GlobalErrorCode.USER_NOT_PRIVILEGE);
+//            }
+            return null;
         }
     }
 

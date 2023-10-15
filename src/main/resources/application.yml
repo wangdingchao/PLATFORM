@@ -3,6 +3,30 @@ server:
 
 
 spring:
+  datasource:
+    dspdb:
+      jdbc-url: jdbc:mysql://mycat.server:8066/${db}?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+      username: dsp
+      password: dsp@sogal
+      driver-class-name: com.mysql.jdbc.Driver
+
+      initialSize: 10
+      minIdle: 5
+      maxActive: 100
+      maxWait: 60000
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+
+      filter:
+        stat:
+          enabled: true
+        wall:
+          enabled: true
+          drop-table-allow: false
+          config:
+            multi-statement-allow: true
   redis:
     password: bjSogal
     timeout: 15

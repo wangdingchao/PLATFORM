@@ -71,6 +71,10 @@ public class Position implements Serializable {
 
     private Map<String,List<String>> bizPrivileges;
 
+    private String positionName;
+
+    private String orgName;
+
     public Position(String name) {
         this.name = name;
     }

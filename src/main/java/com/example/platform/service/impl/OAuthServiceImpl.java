@@ -42,14 +42,14 @@ public class OAuthServiceImpl implements OAuthService {
 //
 //    private final DealerOrgUtil dealerOrgUtil;
 
-    @Value("${oauth.reuseToken}")
-    private boolean reuseToken;
-    @Value("${oauth.ttl}")
-    private int ttl;
-    @Value("${ids.login.url}")
-    private String url;
-    @Value("${ids.login.key}")
-    private String key;
+//    @Value("${oauth.reuseToken}")
+//    private boolean reuseToken;
+//    @Value("${oauth.ttl}")
+//    private int ttl;
+//    @Value("${ids.login.url}")
+//    private String url;
+//    @Value("${ids.login.key}")
+//    private String key;
 
     /**
      * WEB页面密码登录 手机号+密码登录
