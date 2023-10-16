@@ -34,6 +34,10 @@ public class Employee implements Serializable {
 
     private String positionId;
 
+    private String code;
+
+    private String grade;
+
 
     public Employee(String id, String name, String mobile) {
         this.id = id;

@@ -126,7 +126,7 @@ public class OAuthServiceImpl implements OAuthService {
         payload.setIdsUser(loginUser);
         // 生成token
 //        return genToken(payload, appSource, payload.getId());
-        return null;
+        return payload;
     }
 
 

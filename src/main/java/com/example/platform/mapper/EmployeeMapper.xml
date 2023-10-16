@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.platform.mapper.EmployeeMapper">
+
+    <resultMap id="employee" type="com.example.platform.pojo.EmployeeDTO">
+        <id column="ID" property="id"/>
+        <id column="ORG_ID" property="orgId"/>
+        <id column="POSITION_ID" property="positionId"/>
+        <result column="TEAM_ID" property="teamId"/>
+        <result column="NAME" property="name"/>
+        <result column="STATUS" property="status"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="CODE" property="code"/>
+        <result column="WECHAT_OPEN_ID" property="wechatOpenId"/>
+        <result column="GRADE" property="grade"/>
+        <association property="user" javaType="com.example.platform.pojo.User">
+            <result column="KUJIALE" property="kujiale"/>
+            <result column="VALID" property="valid"/>
+        </association>
+        <association property="organization" javaType="com.example.platform.pojo.Organization">
+            <result column="ORG_NAME" property="name"/>
+            <result column="DEALER_CODE" property="dealerCode"/>
+            <result column="SOGAL_CODE" property="sogalCode"/>
+            <result column="SCHMIDT_CODE" property="schmidtCode"/>
+            <result column="MILANA_CODE" property="milanaCode"/>
+            <result column="ORG_TYPE" property="orgType"/>
+            <result column="X_ORG_ID" property="orgId"/>
+        </association>
+        <association property="position" javaType="com.example.platform.pojo.Position">
+            <result column="POSITION_NAME" property="name"/>
+            <result column="SEQ" property="seq"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="labelEmployee" type="com.example.platform.pojo.EmployeeDTO">
+        <id column="ID" property="id"/>
+        <id column="ORG_ID" property="orgId"/>
+        <id column="POSITION_ID" property="positionId"/>
+        <result column="TEAM_ID" property="teamId"/>
+        <result column="NAME" property="name"/>
+        <result column="STATUS" property="status"/>
+        <result column="MOBILE" property="mobile"/>
+        <result column="WECHAT_OPEN_ID" property="wechatOpenId"/>
+        <association property="organization" javaType="com.example.platform.pojo.Organization">
+            <result column="ORG_NAME" property="name"/>
+            <result column="SOGAL_CODE" property="sogalCode"/>
+            <result column="SCHMIDT_CODE" property="schmidtCode"/>
+            <result column="MILANA_CODE" property="milanaCode"/>
+        </association>
+        <association property="position" javaType="com.example.platform.pojo.Position">
+            <result column="POSITION_NAME" property="name"/>
+        </association>
+    </resultMap>
+
+
+    <sql id="emp">
+        emp.ID,
+        emp.NAME,
+        emp.MOBILE,
+        emp.STATUS,
+        emp.COMPANY_CODE,
+        emp.ORGANIZATION_ID,
+        emp.POSITION_ID,
+        emp.JOIN_PLATFORM_TIME,
+        emp.ON_BOARDING_TIME,
+        emp.TURN_POSITIVE_TIME,
+        emp.RESIGNATION_DATE,
+        emp.GRADE
+    </sql>
+
+    <sql id="pageCondition">
+        <where>
+            emp.COMPANY_CODE = #{companyCode}
+            <if test="name != null">
+                AND emp.NAME LIKE concat('%', #{name} ,'%')
+            </if>
+            <if test="mobile != null">
+                AND emp.MOBILE LIKE concat('%', #{mobile} ,'%')
+            </if>
+            <if test="positionId != null">
+                AND eop.POSITION_ID = #{positionId}
+            </if>
+            <if test="orgIds.size > 0">
+                AND eop.ORG_ID IN
+                <foreach collection="orgIds" item="orgId" open="(" close=")" separator=",">
+                    #{orgId}
+                </foreach>
+            </if>
+            <if test="statues != null">
+                AND emp.STATUS IN
+                <foreach collection="statues" item="status" open="(" close=")" separator=",">
+                    #{status}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="countByCondition" resultType="int">
+        SELECT
+            COUNT(emp.ID)
+        FROM DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID AND eop.VALID = TRUE AND eop.PRIMARY = TRUE
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID AND pos.VALID = TRUE
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID AND org.VALID = TRUE
+        LEFT JOIN SYS_USER user ON user.ID = emp.ID
+        <include refid="pageCondition"/>
+    </select>
+
+    <select id="findPageByCondition" resultMap="employee">
+        SELECT
+        emp.ID, emp.NAME, emp.MOBILE, emp.STATUS,
+        user.WECHAT_OPEN_ID,user.KUJIALE,if(user.VALID = '1' ,1, 0) AS VALID,
+        eop.ORG_ID, org.NAME AS ORG_NAME, org.ORG_TYPE AS ORG_TYPE, org.ORG_ID AS X_ORG_ID,
+        eop.POSITION_ID, pos.NAME AS POSITION_NAME,pos.SEQ, IFNULL(org.DEALER_CODE, (SELECT
+        GROUP_CONCAT(distinct DEALER_CODE )
+        FROM
+        DEALER_ORGANIZATION
+        WHERE
+        DEALER_CODE IS NOT NULL
+        AND COMPANY_CODE = org.COMPANY_CODE )) AS DEALER_CODE
+        FROM
+        DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID AND eop.VALID = TRUE AND eop.PRIMARY = TRUE
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID AND pos.VALID = TRUE
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID AND org.VALID = TRUE
+        LEFT JOIN SYS_USER user ON user.ID = emp.ID
+        <include refid="pageCondition"/>
+        ORDER BY emp.STATUS, org.CODE, emp.MOBILE LIMIT #{offset}, #{size};
+    </select>
+
+    <select id="findListByCondition" resultMap="employee">
+        SELECT
+            emp.ID, emp.NAME, emp.MOBILE,
+            eop.ORG_ID, org.NAME AS ORG_NAME,
+            eop.POSITION_ID, pos.NAME AS POSITION_NAME,
+            dte.TEAM_ID, team.NAME AS TEAM_NAME,
+            emp.CODE AS CODE
+        FROM
+            DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID
+        LEFT JOIN DEALER_TEAM_EMP dte ON dte.EMP_ID = eop.EMP_ID AND eop.ORG_ID = dte.EMP_ORG
+        LEFT JOIN DEALER_TEAM team ON team.ID = dte.TEAM_ID
+        WHERE
+        <if test="name != null">
+            emp.NAME LIKE concat('%', #{name} ,'%') AND
+        </if>
+        <if test="mobile != null">
+            emp.MOBILE LIKE concat('%', #{mobile} ,'%') AND
+        </if>
+        <if test="positionId != null">
+            eop.POSITION_ID = #{positionId} AND
+        </if>
+        <if test="organizationId != null">
+            eop.ORG_ID = #{organizationId} AND
+        </if>
+        <if test="dealerCode != null">
+            org.DEALER_CODE = #{dealerCode} AND
+        </if>
+        <if test="companyCode != null">
+            emp.COMPANY_CODE = #{companyCode} AND
+        </if>
+        emp.STATUS IN
+        <foreach collection="statues" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+        AND eop.VALID = TRUE AND pos.VALID = TRUE
+        ORDER BY emp.MOBILE;
+    </select>
+
+    <select id="findByOrgAndPos" resultMap="labelEmployee">
+        SELECT
+            emp.ID, emp.`NAME`, emp.MOBILE
+            <if test="!isDimission">
+                ,eop.ORG_ID, org.NAME AS ORG_NAME, org.SOGAL_CODE, org.SCHMIDT_CODE, org.MILANA_CODE
+                ,eop.POSITION_ID, pos.NAME AS POSITION_NAME
+                ,dte.TEAM_ID, team.NAME AS TEAM_NAME, team.TYPE AS TEAM_TYPE
+                <if test="isConnectorEmp">
+                    ,cce.TEAM_ID AS CON_TEAM_ID, cch.NAME AS CON_TEAM_NAME, cce.VALID, cch.CHANNEL_SOURCE, cce.ID AS CON_EMP_ID
+                </if>
+                ,brand.SOGAL, brand.SCHMIDT, brand.MILANA
+            </if>
+            <if test="isDimission">
+                ,NULL AS TEAM_ID
+            </if>
+        FROM
+            DEALER_EMPLOYEE emp
+        <if test="!isDimission">
+            LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop on emp.ID = eop.EMP_ID
+            LEFT JOIN DEALER_ORGANIZATION org ON eop.ORG_ID = org.ID
+            LEFT JOIN DEALER_POSITION pos ON eop.POSITION_ID = pos.ID
+            LEFT JOIN DEALER_TEAM_EMP dte ON dte.EMP_ID = eop.EMP_ID AND eop.ORG_ID = dte.EMP_ORG
+            LEFT JOIN DEALER_TEAM team ON team.ID = dte.TEAM_ID
+            <if test="isConnectorEmp">
+                LEFT JOIN CHANNEL_CONNECTOR_EMP cce ON cce.EMPLOYEE_ID = eop.EMP_ID AND eop.ORG_ID = cce.EMPLOYEE_ORG AND cce.VALID = TRUE
+                LEFT JOIN CHANNEL_CONNECTOR_TEAM cch ON cce.TEAM_ID = cch.ID AND cch.VALID = TRUE
+            </if>
+            LEFT JOIN DEALER_DESIGNER_BRAND brand ON brand.EMP_ID = emp.ID
+            WHERE eop.VALID = TRUE AND pos.VALID = TRUE
+            <if test="orgPath != null">
+                <choose>
+                    <when test="isChildOrg">
+                        AND CODE_PATH LIKE concat(#{orgPath}, "%")
+                    </when>
+                    <otherwise>
+                        AND org.CODE_PATH = #{orgPath}
+                    </otherwise>
+                </choose>
+            </if>
+            AND eop.POSITION_ID IN
+            <foreach collection="positionIds" item="positionId" open="(" close=")" separator=",">
+                #{positionId}
+            </foreach>
+            AND emp.STATUS IN
+            <foreach collection="statues" item="status" separator="," open="(" close=")">
+                #{status}
+            </foreach>
+            <if test="isTeamEmp != null">
+                <choose>
+                    <when test="isTeamEmp">
+                        <choose>
+                            <when test="isTroop == null">
+                                AND (eop.EMP_ID, eop.ORG_ID) IN (SELECT EMP_ID, EMP_ORG FROM DEALER_TEAM_EMP)
+                            </when>
+                            <otherwise>
+                                <choose>
+                                    <when test="isTroop">
+                                        AND (eop.EMP_ID, eop.ORG_ID) IN (SELECT EMP_ID, EMP_ORG FROM DEALER_TEAM_EMP a LEFT JOIN DEALER_TEAM b ON a.TEAM_ID = b.ID WHERE b.VALID = 1 AND b.TYPE = "TROOP_TEAM")
+                                    </when>
+                                    <otherwise>
+                                        AND (eop.EMP_ID, eop.ORG_ID) IN (SELECT EMP_ID, EMP_ORG FROM DEALER_TEAM_EMP a LEFT JOIN DEALER_TEAM b ON a.TEAM_ID = b.ID WHERE b.VALID = 1 AND b.TYPE != "TROOP_TEAM")
+                                    </otherwise>
+                                </choose>
+                            </otherwise>
+                        </choose>
+                    </when>
+                    <otherwise>
+                        AND (eop.EMP_ID, eop.ORG_ID) NOT IN (SELECT EMP_ID, EMP_ORG FROM DEALER_TEAM_EMP)
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="isConnector != null">
+                <choose>
+                    <when test="isConnector">
+                        AND (eop.EMP_ID, eop.ORG_ID) IN (SELECT EMPLOYEE_ID, EMPLOYEE_ORG FROM CHANNEL_CONNECTOR_EMP)
+                    </when>
+                    <otherwise>
+                        AND (eop.EMP_ID, eop.ORG_ID) NOT IN (SELECT EMPLOYEE_ID, EMPLOYEE_ORG FROM CHANNEL_CONNECTOR_EMP)
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="employeeId != null">
+                AND emp.ID = #{employeeId}
+            </if>
+            <if test="name != null">
+                AND emp.`NAME` LIKE concat('%', #{name} ,'%')
+            </if>
+            <if test="sogal != null or schmidt != null or milana != null">
+                <if test="sogal">
+                    AND brand.SOGAL = #{graduated}
+                </if>
+                <if test="schmidt">
+                    AND brand.SCHMIDT = #{graduated}
+                </if>
+                <if test="milana">
+                    AND brand.MILANA = #{graduated}
+                </if>
+            </if>
+            <if test="dealerCode != null">
+                AND org.DEALER_CODE = #{dealerCode}
+            </if>
+            <if test="companyCodes != null and companyCodes.size()>0">
+                AND org.COMPANY_CODE IN
+                <foreach collection="companyCodes" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </if>
+        ORDER BY
+        <if test="!isDimission">
+            <if test="isConnectorEmp">
+                cce.VALID DESC,
+            </if>
+        </if>
+         emp.MOBILE
+    </select>
+
+    <select id="findByMobileAndDealer" resultType="com.example.platform.pojo.EmployeeDTO">
+        SELECT
+        <include refid="emp"/>
+        FROM
+        DEALER_EMPLOYEE emp
+        WHERE
+        MOBILE = #{mobile}
+        <if test="companyCode != null">
+            AND COMPANY_CODE = #{companyCode}
+        </if>
+        <if test="statues != null">
+            AND emp.STATUS IN
+            <foreach collection="statues" item="status" separator="," open="(" close=")">
+                #{status}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findByMobiles" resultType="com.example.platform.pojo.EmployeeDTO">
+        SELECT
+            <include refid="emp"/>
+        FROM DEALER_EMPLOYEE emp
+        WHERE MOBILE IN
+        <foreach collection="mobiles" item="mobile" open="(" close=")" separator=",">
+            #{mobile}
+        </foreach>
+        AND STATUS != #{empStatus} AND COMPANY_CODE = #{companyCode};
+    </select>
+
+    <select id="findByLike" resultMap="employee">
+        SELECT
+            emp.ID, emp.NAME, emp.MOBILE,
+            eop.ORG_ID, org.NAME AS ORG_NAME,
+            eop.POSITION_ID, pos.NAME AS POSITION_NAME,
+            dte.TEAM_ID, team.NAME AS TEAM_NAME,
+            emp.CODE AS CODE
+        FROM
+            DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = eop.POSITION_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID
+        LEFT JOIN DEALER_TEAM_EMP dte ON dte.EMP_ID = eop.EMP_ID AND eop.ORG_ID = dte.EMP_ORG
+        LEFT JOIN DEALER_TEAM team ON team.ID = dte.TEAM_ID
+        WHERE
+        eop.VALID = TRUE AND pos.VALID = TRUE AND emp.COMPANY_CODE = #{companyCode} AND
+        emp.STATUS IN
+        <foreach collection="statues" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+        <if test="like != null">
+            AND (emp.NAME LIKE concat('%', #{like} ,'%') OR emp.MOBILE LIKE concat('%', #{like} ,'%'));
+        </if>
+    </select>
+
+    <select id="findById" resultType="com.example.platform.pojo.EmployeeDTO">
+        SELECT
+            <include refid="emp"/>
+        FROM
+            DEALER_EMPLOYEE emp
+        WHERE
+        id = #{id}
+        <if test="!isAll">
+            AND STATUS IN
+            <foreach collection="statues" item="status" separator="," open="(" close=")">
+                #{status}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="findByOrgAndId" resultMap="employee">
+        SELECT
+            emp.ID, emp.NAME, emp.MOBILE, emp.STATUS,
+            eop.ORG_ID, org.NAME AS ORG_NAME,
+            dtc.TEAM_ID, team.NAME AS TEAM_NAME
+        FROM
+            DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID
+        LEFT JOIN DEALER_TEAM_EMP dtc ON dtc.EMP_ID = eop.EMP_ID AND eop.ORG_ID = dtc.EMP_ORG
+        LEFT JOIN DEALER_TEAM team ON team.ID = dtc.TEAM_ID
+        WHERE eop.VALID = TRUE AND org.VALID =TRUE AND emp.ID = #{id} AND eop.ORG_ID = #{orgId} AND
+        emp.STATUS IN
+        <foreach collection="statues" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <select id="findByIdAndStatues" resultMap="employee">
+        SELECT
+        emp.ID, emp.NAME, emp.MOBILE, emp.STATUS,
+        eop.ORG_ID, org.NAME AS ORG_NAME
+        FROM
+        DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = eop.ORG_ID
+        WHERE eop.VALID = TRUE AND org.VALID =TRUE AND eop.`PRIMARY` = TRUE AND emp.ID = #{id} AND
+        emp.STATUS IN
+        <foreach collection="statues" item="status" separator="," open="(" close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <update id="updateStatus">
+        UPDATE DEALER_EMPLOYEE SET STATUS = #{status} WHERE ID = #{id};
+    </update>
+
+    <update id="updateName">
+        UPDATE DEALER_EMPLOYEE SET NAME = #{name} WHERE ID = #{id};
+    </update>
+
+    <update id="updateMobile">
+        UPDATE DEALER_EMPLOYEE SET MOBILE = #{mobile} WHERE ID = #{id};
+    </update>
+
+    <insert id="insert" parameterType="com.example.platform.pojo.EmployeeDTO">
+        INSERT INTO
+        DEALER_EMPLOYEE(ID, NAME, CODE, MOBILE, STATUS, COMPANY_CODE, ORGANIZATION_ID, POSITION_ID)
+        VALUES
+        (#{id}, #{name}, #{code}, #{mobile}, #{status}, #{companyCode}, #{organizationId}, #{positionId})
+    </insert>
+
+    <select id="findEmpByDeptId" resultType="com.example.platform.pojo.EmployeeDTO">
+        SELECT
+            emp.ID, emp.NAME,
+            emp.MOBILE, emp.STATUS, eop.ORG_ID
+        FROM
+        DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        WHERE
+        eop.ORG_ID = #{orgId} AND VALID = #{valid}
+    </select>
+
+    <select id="findMiddleDealerEmployees" parameterType="map" resultType="com.example.platform.pojo.MiddleDealerEmployee">
+        SELECT * FROM MIDDLE_DEALER_EMPLOYEE WHERE EMP_ID IN (
+        <foreach collection="empIds" item="item" separator="," index="index">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+    <select id="findMiddleDealerEmployeesByEmpId" parameterType="string" resultType="com.example.platform.pojo.MiddleDealerEmployee">
+        SELECT * FROM MIDDLE_DEALER_EMPLOYEE WHERE EMP_ID = #{empId}
+    </select>
+
+
+    <select id="get" resultType="com.example.platform.pojo.Employee">
+        select * from DEALER_EMPLOYEE
+        where ID = #{id}
+    </select>
+
+    <select id="gets" resultType="com.example.platform.pojo.Employee">
+        select * from DEALER_EMPLOYEE
+        where ID in
+        <foreach collection="empIds" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+
+    <update id="update" parameterType="com.example.platform.pojo.Employee">
+        update DEALER_EMPLOYEE
+        <set>
+            <if test="name != null and name != ''">
+                `NAME` = #{name},
+            </if>
+            <if test="mobile != null and mobile != ''">
+                `MOBILE` = #{mobile},
+            </if>
+            <if test="code != null and code != ''">
+                `CODE` = #{code},
+            </if>
+            <if test="status != null">
+                `STATUS` = #{status},
+            </if>
+            <if test="companyCode != null and companyCode != ''">
+                `COMPANY_CODE` = #{companyCode},
+            </if>
+            <if test="organizationId != null and organizationId != ''">
+                `ORGANIZATION_ID` = #{organizationId},
+            </if>
+            <if test="positionId != null and positionId != ''">
+                `POSITION_ID` = #{positionId},
+            </if>
+            <if test="joinPlatformTime != null">
+                JOIN_PLATFORM_TIME = #{joinPlatformTime},
+            </if>
+            <if test="onBoardingTime != null">
+                ON_BOARDING_TIME = #{onBoardingTime},
+            </if>
+            <if test="turnPositiveTime != null">
+                TURN_POSITIVE_TIME = #{turnPositiveTime},
+            </if>
+            <if test="resignationDate != null">
+                RESIGNATION_DATE = #{resignationDate},
+            </if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <select id="findEmpInfoByCondition" resultMap="employee">
+        SELECT
+        emp.ID, emp.NAME, emp.MOBILE,
+        emp.ORGANIZATION_ID AS ORG_ID, org.NAME AS ORG_NAME,
+        emp.POSITION_ID, pos.NAME AS POSITION_NAME
+        FROM
+        DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_POSITION pos ON pos.ID = emp.POSITION_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON  org.ID = emp.ORGANIZATION_ID
+        LEFT JOIN SYS_USER users on users.ID = emp.ID
+        WHERE
+        org.VALID = TRUE AND pos.VALID = TRUE AND users.VALID = '1'
+        <if test="orgId != null and orgId != ''">
+            AND emp.ORGANIZATION_ID = #{orgId}
+        </if>
+        <if test="empId != null and empId != ''">
+            AND emp.ID = #{empId}
+        </if>
+    </select>
+
+    <update id="setStatus">
+        UPDATE DEALER_EMPLOYEE set STATUS = #{toStatus}
+        WHERE ID = #{id} and STATUS = #{fromStatus}
+    </update>
+
+    <select id="getMaxCode" resultType="String">
+        select max(CODE) from dealer_employee
+    </select>
+
+    <update id="updateTime">
+        update dealer_employee
+        <set>
+            <if test="onBoardingTime != null">
+                TURN_POSITIVE_TIME = null,RESIGNATION_DATE = null, JOIN_PLATFORM_TIME = #{onBoardingTime}, ON_BOARDING_TIME = #{onBoardingTime},
+            </if>
+            <if test="turnPositiveTime != null">
+                TURN_POSITIVE_TIME = #{turnPositiveTime},
+            </if>
+            <if test="resignationDate != null">
+                RESIGNATION_DATE = #{resignationDate},
+            </if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <select id="getEmpCountByOrgId" resultType="int">
+        select count(em.ID) from dealer_employee em
+        left join sys_user u on em.ID = u.ID
+        where u.VALID = '1' and em.ORGANIZATION_ID = #{organizationId}
+    </select>
+
+    <update id="updateGrade">
+        UPDATE DEALER_EMPLOYEE SET GRADE = #{grade} WHERE ID = #{employeeId}
+    </update>
+    <update id="updateCleanGrade">
+        UPDATE DEALER_EMPLOYEE SET GRADE = NULL;
+    </update>
+
+    <select id="findOrderLevelByEmp" resultMap="employee">
+        SELECT
+        emp.ID, emp.NAME, emp.MOBILE,
+        eop.ORG_ID, org.NAME AS ORG_NAME,emp.GRADE,
+        eop.POSITION_ID, pos.NAME AS POSITION_NAME,
+        emp.CODE AS CODE
+        FROM
+        DEALER_EMPLOYEE emp
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+        LEFT JOIN DEALER_ORGANIZATION org ON org.ID = eop.ORG_ID
+        WHERE
+        eop.VALID = TRUE AND pos.VALID = TRUE
+        <if test="mobile != null">
+            AND emp.MOBILE = #{mobile}
+        </if>
+        <if test="organizationId != null">
+            AND eop.ORG_ID = #{organizationId}
+        </if>
+    </select>
+
+    <select id="findOrgEmployee" resultMap="labelEmployee">
+        SELECT
+        emp.ID, emp.`NAME`, emp.MOBILE
+            ,eop.ORG_ID, org.NAME AS ORG_NAME, org.SOGAL_CODE, org.SCHMIDT_CODE, org.MILANA_CODE
+            ,eop.POSITION_ID, pos.NAME AS POSITION_NAME
+        FROM
+            DEALER_EMPLOYEE emp
+            LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON emp.ID = eop.EMP_ID
+            LEFT JOIN DEALER_ORGANIZATION org ON eop.ORG_ID = org.ID
+            LEFT JOIN DEALER_POSITION pos ON eop.POSITION_ID = pos.ID
+            WHERE eop.VALID = TRUE AND pos.VALID = TRUE
+        <if test="orgPath != null">
+            AND CODE_PATH LIKE concat(#{orgPath}, "%")
+        </if>
+        <if test="empStatuses != null and empStatuses.size() > 0">
+            AND emp.`STATUS` IN (
+            <foreach collection="empStatuses" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="orgId != null">
+            AND org.ID = #{orgId}
+        </if>
+        <if test="dealerCode != null">
+            AND org.DEALER_CODE = #{dealerCode}
+        </if>
+        <if test="companyCode != null">
+            AND org.COMPANY_CODE = #{companyCode}
+        </if>
+    </select>
+
+
+</mapper>

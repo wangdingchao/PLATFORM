@@ -200,4 +200,6 @@ public class Organization implements Serializable {
      */
     private Boolean isPreDingSign;
 
+    private String orgType;
+
 }

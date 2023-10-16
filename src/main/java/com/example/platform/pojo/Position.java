@@ -69,6 +69,9 @@ public class Position implements Serializable {
 
     private String positionId;
 
+    @Transient
+    private PositionLevel level;
+
     private Map<String,List<String>> bizPrivileges;
 
     private String positionName;

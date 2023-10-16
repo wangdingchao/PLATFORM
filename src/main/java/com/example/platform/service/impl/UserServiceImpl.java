@@ -609,7 +609,7 @@ public class UserServiceImpl implements IUserService {
      */
     private void dealLoginFollow(String mobile, UserLoginLog userLoginLog, String message, TerminalType terminal, UserType type) {
         try {
-            ((UserServiceImpl) AopContext.currentProxy()).loginFollow(mobile, userLoginLog, message, terminal, type);
+            loginFollow(mobile, userLoginLog, message, terminal, type);
         } catch (Throwable e) {
             log.warn(Constants.SERVICE_LOG_TAG + "login follow fail \n {}", e);
         }

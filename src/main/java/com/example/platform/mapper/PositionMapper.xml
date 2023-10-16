@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.platform.mapper.PositionMapper">
+
+    <resultMap id="position" type="com.example.platform.pojo.Position">
+        <id column="ID" property="id"/>
+        <result column="COMPANY_CODE" property="companyCode"/>
+        <result column="NAME" property="name"/>
+        <result column="ALIAS" property="alias"/>
+        <result column="SEQ" property="seq"/>
+        <result column="ORG_ID" property="orgId"/>
+        <result column="VALID" property="valid"/>
+        <result column="DATA_PRIVILEGE" property="dataPrivilege"/>
+        <association property="organization" javaType="com.example.platform.pojo.Organization">
+            <result column="ORG_NAME" property="name"/>
+        </association>
+        <association property="level" javaType="com.example.platform.pojo.PositionLevel">
+            <result column="LEVEL_ID" property="id"/>
+            <result column="LEVEL_NAME" property="name"/>
+        </association>
+        <collection property="dictPrivileges" column="ID" select="findDictPriByPosition"/>
+    </resultMap>
+
+    <sql id="pos">
+        pos.ID,
+        pos.COMPANY_CODE,
+        pos.NAME,
+        pos.ALIAS,
+        pos.SEQ,
+        pos.ORG_ID,
+        pos.VALID,
+        pos.DATA_PRIVILEGE,
+        pl.ID AS LEVEL_ID,
+        pl.NAME AS LEVEL_NAME
+    </sql>
+
+    <select id="findIdByOrgIds" resultType="string">
+        SELECT
+        ID
+        FROM
+        DEALER_POSITION
+        WHERE
+        VALID = TRUE AND ORG_ID IN
+        <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </select>
+
+    <select id="findAllById" resultMap="position">
+        SELECT <include refid="pos"/>
+        FROM DEALER_POSITION pos
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        WHERE pos.ID = #{id};
+    </select>
+
+    <select id="findById" resultMap="position">
+        SELECT <include refid="pos"/>
+        FROM DEALER_POSITION pos
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        WHERE pos.ID = #{id} AND pos.VALID = TRUE;
+    </select>
+
+    <select id="findBySeq" resultMap="position">
+        SELECT <include refid="pos"/>
+        FROM DEALER_POSITION pos
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        WHERE pos.SEQ = #{seq}
+    </select>
+
+    <select id="findRoleRelation" resultType="string">
+        SELECT ROLE_ID FROM DEALER_POSITION_ROLE WHERE POSITION_ID = #{positionId};
+    </select>
+
+    <select id="findXRoleRelation" resultType="string">
+        SELECT X_ROLE_ID FROM DEALER_POSITION_X_ROLE WHERE POSITION_ID = #{positionId};
+    </select>
+
+    <select id="findByOrgId" resultMap="position">
+        SELECT <include refid="pos"/>
+        FROM DEALER_POSITION pos
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        WHERE pos.ORG_ID = #{orgId} AND pos.VALID = true ORDER BY pos.NAME;
+    </select>
+
+    <select id="findDictPriByPosition" resultType="com.example.platform.pojo.DictPrivilege">
+        select DICT_TYPE, DICT_VALUE from SYS_PRIVILEGE WHERE POSITION_ID = #{positionId}
+    </select>
+
+    <select id="findAreaPriByPosition" resultType="com.example.platform.pojo.DictPrivilege">
+        SELECT
+            DICT_TYPE,
+            DICT_VALUE,
+            b.LABEL as DICT_LABEL
+        FROM
+            SYS_PRIVILEGE a LEFT JOIN SYS_DICT b on a.DICT_VALUE = b.`VALUE`
+        WHERE
+          a.DICT_TYPE = 'DEALER_DATA'
+            AND POSITION_ID = #{positionId}
+            ORDER BY DICT_VALUE
+    </select>
+
+    <select id="findIdByEmpAndOrg" resultType="string">
+        SELECT
+        pos.ID
+        FROM
+        DEALER_POSITION pos
+        LEFT JOIN DEALER_EMPLOYEE_ORGANIZATION eop ON pos.ID = eop.POSITION_ID
+        WHERE
+        eop.VALID = TRUE AND eop.EMP_ID = #{empId} AND eop.ORG_ID = #{orgId};
+    </select>
+
+    <select id="findByEmployee" resultType="com.example.platform.pojo.Position">
+        SELECT
+        org.ID AS orgId,
+        org.`NAME` AS orgName,
+        IFNULL(org.DEALER_CODE, (SELECT
+        GROUP_CONCAT(distinct DEALER_CODE )
+        FROM
+        DEALER_ORGANIZATION
+        WHERE
+        DEALER_CODE IS NOT NULL
+        AND COMPANY_CODE = org.COMPANY_CODE )) AS orgDealer,
+        org.CITY,
+        org.AREA,
+        org.ADDR,
+        pos.ID AS positionId,
+        pos.`NAME` AS positionName,
+        eop.`PRIMARY` AS `primary`
+        <if test="roleFlag == true">
+          ,dpr.ROLE_ID as roleId
+        </if>
+        FROM
+        DEALER_EMPLOYEE_ORGANIZATION eop
+        LEFT JOIN DEALER_ORGANIZATION org ON eop.ORG_ID = org.ID
+        LEFT JOIN DEALER_POSITION pos ON eop.POSITION_ID = pos.ID
+        <if test="roleFlag == true">
+          LEFT JOIN DEALER_POSITION_ROLE dpr ON dpr.POSITION_ID = pos.ID
+        </if>
+        WHERE
+        eop.VALID = TRUE AND eop.EMP_ID = #{employeeId}
+        ORDER BY eop.`PRIMARY` DESC;
+    </select>
+
+    <select id="findListByPosition" resultMap="position">
+        SELECT
+            pos.ID, pos.COMPANY_CODE, pos.NAME, pos.ALIAS, pos.SEQ, pos.DATA_PRIVILEGE, pos.VALID,
+            pos.ORG_ID, org.NAME AS ORG_NAME
+        FROM
+            DEALER_POSITION pos
+        LEFT JOIN DEALER_ORGANIZATION org ON org.ID = pos.ORG_ID AND org.VALID = TRUE
+        WHERE
+            <if test="name != null and name != ''">
+                pos.NAME LIKE concat('%',#{name},'%') AND
+            </if>
+            <if test="alias != null and alias != ''">
+                pos.ALIAS LIKE concat('%',#{alias},'%') AND
+            </if>
+            <if test="orgId != null and orgId != ''">
+                pos.ORG_ID = #{orgId} AND
+            </if>
+            <if test="valid != null">
+                pos.VALID = #{valid} AND
+            </if>
+            pos.COMPANY_CODE IN
+        <foreach collection="dealerCodes" item="dealerCode" separator="," open="(" close=")">
+            #{dealerCode}
+        </foreach>
+        ORDER BY pos.NAME;
+    </select>
+
+    <sql id="pageCondition">
+        <where>
+            <if test="name != null">
+                pos.NAME LIKE concat('%',#{name},'%') AND
+            </if>
+            <if test="alias != null">
+                pos.ALIAS LIKE concat('%',#{alias},'%') AND
+            </if>
+            <if test="orgIds.size > 0">
+                pos.ORG_ID IN
+                <foreach collection="orgIds" item="orgId" open="(" close=")" separator=",">
+                    #{orgId}
+                </foreach>
+                AND
+            </if>
+            <if test="valid != null">
+                pos.VALID = #{valid} AND
+            </if>
+            <if test="label != null">
+                tag.NAME IN
+                <foreach collection="label" item="lab" open="(" separator="," close=")">
+                    #{lab}
+                </foreach>
+                AND
+            </if>
+            pos.COMPANY_CODE IN
+            <foreach collection="dealerCodes" item="dealerCode" separator="," open="(" close=")">
+                #{dealerCode}
+            </foreach>
+        </where>
+    </sql>
+
+    <select id="findPageByCondition" resultMap="position">
+        SELECT DISTINCT
+            pos.ID, pos.COMPANY_CODE, pos.NAME, pos.ALIAS, pos.SEQ, pos.DATA_PRIVILEGE, pos.VALID,
+            pos.ORG_ID, org.NAME AS ORG_NAME, pl.ID AS LEVEL_ID, pl.NAME AS LEVEL_NAME
+        FROM
+            DEALER_POSITION pos
+        LEFT JOIN DEALER_ORGANIZATION org ON org.ID = pos.ORG_ID AND org.VALID = TRUE
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        <if test="label != null">
+            INNER JOIN SYS_TAG_BINDING stb ON stb.ENTITY_ID = pos.ID AND stb.REALM = "POSITION"
+            LEFT JOIN SYS_TAG tag ON tag.ID = stb.TAG_ID
+        </if>
+        <include refid="pageCondition"/>
+        ORDER BY pos.NAME limit #{offset}, #{size};
+    </select>
+
+    <select id="countByCondition" resultType="int">
+        SELECT
+            COUNT(DISTINCT pos.ID)
+        FROM
+            DEALER_POSITION pos
+        LEFT JOIN DEALER_ORGANIZATION org ON org.ID = pos.ORG_ID AND org.VALID = TRUE
+        <if test="label != null">
+            INNER JOIN SYS_TAG_BINDING stb ON stb.ENTITY_ID = pos.ID AND stb.REALM = "POSITION"
+            LEFT JOIN SYS_TAG tag ON tag.ID = stb.TAG_ID
+        </if>
+        <include refid="pageCondition"/>
+    </select>
+
+    <delete id="deleteDictPrivilegeByPosition">
+        DELETE FROM SYS_PRIVILEGE WHERE POSITION_ID = #{positionId};
+    </delete>
+
+    <delete id="deleteRoleRelation">
+        DELETE FROM DEALER_POSITION_ROLE WHERE POSITION_ID = #{positionId};
+    </delete>
+
+    <delete id="deleteXRoleRelation">
+        DELETE FROM DEALER_POSITION_X_ROLE WHERE POSITION_ID = #{positionId};
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE DEALER_POSITION SET VALID = #{status} WHERE ID = #{id};
+    </update>
+
+    <update id="updateStatusByIds">
+        UPDATE
+          DEALER_POSITION
+        SET
+          VALID = #{status}
+        WHERE
+          ID IN
+        <foreach collection="posIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateStatusByOrgId">
+        UPDATE DEALER_POSITION SET VALID = #{status} WHERE ORG_ID = #{orgId};
+    </update>
+
+    <update id="updateStatusByOrgIds">
+        UPDATE
+          DEALER_POSITION
+        SET
+          VALID = #{status}
+        WHERE
+          ORG_ID IN
+        <foreach collection="orgIds" item="orgId" open="(" separator="," close=")">
+            #{orgId}
+        </foreach>
+    </update>
+
+    <update id="updateDataPrivilege">
+        UPDATE DEALER_POSITION set DATA_PRIVILEGE = #{dataPrivilege} WHERE ID = #{positionId};
+    </update>
+
+    <update id="update" parameterType="com.example.platform.pojo.Position">
+        UPDATE
+            DEALER_POSITION
+        SET
+          <trim suffixOverrides=",">
+              <if test="name != null">
+                  NAME = #{name},
+              </if>
+              <if test="alias != null">
+                  ALIAS = #{alias},
+              </if>
+              <if test="orgId != null">
+                  ORG_ID = #{orgId},
+              </if>
+              <if test="level != null and level.ID != '' and level.ID != null">
+                  `LEVEL` = #{level.id}
+              </if>
+          </trim>
+        WHERE ID = #{id}
+    </update>
+
+    <insert id="insert" parameterType="com.example.platform.pojo.Position">
+        INSERT INTO DEALER_POSITION
+        (ID, COMPANY_CODE, NAME, ALIAS, ORG_ID, `LEVEL`, SEQ, VALID, DATA_PRIVILEGE)
+        VALUES
+        (#{id}, #{companyCode}, #{name}, #{alias}, #{orgId}, #{level.id}, #{seq}, #{valid}, #{dataPrivilege});
+    </insert>
+
+    <insert id="insertDictPrivilege">
+        INSERT INTO SYS_PRIVILEGE (ID, POSITION_ID, DICT_TYPE, DICT_VALUE) VALUES
+        <foreach collection="dictPrivileges" separator="," item="dictPrivilege">
+            (#{dictPrivilege.id}, #{dictPrivilege.positionId}, #{dictPrivilege.dictType}, #{dictPrivilege.dictValue})
+        </foreach>
+    </insert>
+
+    <insert id="insertRoleRelation">
+        INSERT INTO DEALER_POSITION_ROLE (POSITION_ID, ROLE_ID) VALUES
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{positionId}, #{roleId})
+        </foreach>
+    </insert>
+
+    <insert id="insertXRoleRelation">
+        INSERT INTO DEALER_POSITION_X_ROLE (POSITION_ID, X_ROLE_ID) VALUES
+        <foreach collection="xRoleIds" item="xRoleId" separator=",">
+            (#{positionId}, #{xRoleId})
+        </foreach>
+    </insert>
+
+
+    <select id="findByLevel" resultMap="position">
+        SELECT <include refid="pos"/>
+        FROM DEALER_POSITION pos
+        LEFT JOIN dealer_position_level pl on pl.ID = pos.LEVEL
+        WHERE pl.NAME = #{levelName} and pos.COMPANY_CODE = #{companyCode} AND pos.VALID = TRUE;
+    </select>
+
+</mapper>

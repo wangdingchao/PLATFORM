@@ -5,19 +5,14 @@ server:
 spring:
   datasource:
     dspdb:
-      jdbc-url: jdbc:mysql://10.72.3.168:8066/${db}?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
-      username: dsp
-      password: dsp@sogal
+      jdbc-url: jdbc:mysql://10.72.3.168:3310/${db}?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true
+      username: wjw
+      password: wjw@123
       driver-class-name: com.mysql.jdbc.Driver
-
       initialSize: 10
       minIdle: 5
       maxActive: 100
       maxWait: 60000
-      testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
-      poolPreparedStatements: true
 
       filter:
         stat:
@@ -32,7 +27,7 @@ spring:
     timeout: 15
     sentinel:
       master: mymaster
-      nodes: 10.72.1.67:26379,10.72.1.68:26379,10.72.1.69:26379
+      nodes: 10.72.1.67:26379
     pool:
       max-active: 13
       max-idle: 1
@@ -42,5 +37,5 @@ spring:
     pool1: 2
     pool2: 3
 
-db:
+db: dspdb
 
