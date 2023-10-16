@@ -1,6 +1,5 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -8,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class Volunteer {
-    @TableId
+//    @TableId
     private Integer vid;
     private int age;
     private int sex;

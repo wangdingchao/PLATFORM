@@ -1,6 +1,5 @@
 package com.example.platform.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.platform.pojo.Volunteer;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -15,6 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
  */
 
 @Mapper
-public interface VolunteerMapper extends BaseMapper<Volunteer> {
+public interface VolunteerMapper {
 
 }

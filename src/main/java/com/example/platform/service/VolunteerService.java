@@ -1,6 +1,5 @@
 package com.example.platform.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.Volunteer;
 
@@ -11,15 +10,15 @@ import java.util.List;
  */
 public interface VolunteerService {
 
-    Page<Volunteer> findVolunteerPage(int page, int size) throws BizException;
-
-    void addVolunteer(Volunteer volunteer);
-
-    void updateVolunteerById(Volunteer volunteer);
-
-    List<Volunteer> findAllVolunteer();
-
-    Volunteer findVolunteerById(Integer vid);
-
-    void deleteVolunteerById(Integer vid);
+//    Page<Volunteer> findVolunteerPage(int page, int size) throws BizException;
+//
+//    void addVolunteer(Volunteer volunteer);
+//
+//    void updateVolunteerById(Volunteer volunteer);
+//
+//    List<Volunteer> findAllVolunteer();
+//
+//    Volunteer findVolunteerById(Integer vid);
+//
+//    void deleteVolunteerById(Integer vid);
 }

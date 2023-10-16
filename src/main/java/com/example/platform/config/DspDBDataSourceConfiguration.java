@@ -47,7 +47,7 @@ public class DspDBDataSourceConfiguration {
                 new PathMatchingResourcePatternResolver().getResources("classpath*:com.example.platform.mapper/*.xml"),
                 new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/*-mapper.xml")
         ));
-//        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml"));
+        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis-config.xml"));
         return bean.getObject();
     }
 

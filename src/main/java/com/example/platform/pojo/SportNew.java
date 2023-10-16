@@ -1,6 +1,6 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
+
 import lombok.Data;
 
 /**
@@ -16,7 +16,7 @@ import lombok.Data;
 @Data
 public class SportNew {
 
-    @TableId
+//    @TableId
     // 新闻id
     // news id, primary key.
     private Integer snId;

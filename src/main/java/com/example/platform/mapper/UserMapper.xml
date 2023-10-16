@@ -19,12 +19,6 @@
             <id column="POSITION_ID" property="positionId"/>
             <result column="NAME" property="name"/>
             <result column="STATUS" property="status"/>
-            <association property="organization" javaType="com.example.platform.pojo.Organization">
-                <result column="ORG_NAME" property="name"/>
-            </association>
-            <association property="position" javaType="com.example.platform.pojo.Position">
-                <result column="POSITION_NAME" property="name"/>
-            </association>
         </association>
     </resultMap>
 
@@ -92,7 +86,7 @@
         UPDATE SYS_MINI_APP_USER SET UNION_ID = #{unionId} WHERE OPEN_ID = #{openId};
     </update>
 
-    <update id="update" parameterType="com.sogal.common.domain.user.UserDTO">
+    <update id="update" parameterType="com.example.platform.pojo.UserDTO">
         UPDATE SYS_USER
         <trim prefix="set" suffixOverrides=",">
             <if test="mobile != null and mobile != ''">
@@ -150,7 +144,7 @@
         AND role.ID = #{roleId};
     </select>
 
-    <select id="findByMobiles" resultType="com.sogal.common.domain.user.UserDTO">
+    <select id="findByMobiles" resultType="com.example.platform.pojo.UserDTO">
         SELECT
         user.ID,
         user.MOBILE,
@@ -167,7 +161,7 @@
         AND VALID = '1';
     </select>
 
-    <select id="findLikeByMobile" resultType="com.sogal.common.domain.user.UserDTO">
+    <select id="findLikeByMobile" resultType="com.example.platform.pojo.UserDTO">
         SELECT
             <include refid="user"/>, user.LAST_LOGIN_TIME
         FROM
@@ -254,16 +248,16 @@
                 </if>
     </select>
 
-    <insert id="insert" parameterType="com.sogal.common.domain.user.UserDTO">
+    <insert id="insert" parameterType="com.example.platform.pojo.UserDTO">
         insert into SYS_USER(ID, MOBILE, PASSWORD, TYPE, VALID) VALUES (#{id}, #{mobile}, #{password}, #{type}, TRUE);
     </insert>
 
-    <insert id="insertMiniAppUser" parameterType="com.sogal.oauth.domain.MiniAppUser">
+    <insert id="insertMiniAppUser" parameterType="com.example.platform.pojo.MiniAppUser">
         INSERT INTO SYS_MINI_APP_USER (ID, USER_ID, OPEN_ID, UNION_ID, IMAGE_URL, SCOPE)
         VALUES(#{id}, #{userId}, #{openId}, #{unionId}, #{imageUrl}, #{scope})
     </insert>
 
-    <select id="findMiniAppUserByOpenId" resultType="com.sogal.oauth.domain.MiniAppUser">
+    <select id="findMiniAppUserByOpenId" resultType="com.example.platform.pojo.MiniAppUser">
         SELECT ID, USER_ID, OPEN_ID, UNION_ID, IMAGE_URL, SCOPE FROM SYS_MINI_APP_USER WHERE OPEN_ID = #{openId};
     </select>
 

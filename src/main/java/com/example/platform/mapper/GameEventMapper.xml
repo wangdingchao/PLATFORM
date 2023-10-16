@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-    <mapper namespace="com.example.platform.mapper..">
+    <mapper namespace="com.example.platform.mapper.GameEventMapper">
+
+
+    <insert id="addGameEvent" parameterType="com.example.platform.pojo.GameEvent">
+        insert into game_event(gid, title, sign_up_time, game_start_time, road_map, rule)
+        values (#{gid}, #{title}, #{sign_up_time}, #{game_start_time}, #{road_map}, #{rule})
+    </insert>
+    <update id="updateGameEvent" parameterType="com.example.platform.pojo.GameEvent">
+        update game_event
+        set title = #{title}, game_start_time = #{gameStartTime}, road_map = #{roadMap}, rule = #{rule}
+        where gid = #{gid}
+    </update>
+    <select id="findGameEventById" resultType="com.example.platform.pojo.GameEvent">
+        select * from game_event where gid = #{gid}
+    </select>
+    <select id="findGameEventByCondition" resultType="com.example.platform.pojo.GameEvent">
+        select * from game_event where title like concat('%',#{title},'%') limit #{page} #{size}
+    </select>
+    <select id="findGameEventCountByCondition" resultType="java.lang.Integer">
+        select count(*) from game_event where title like concat('%',#{title},'%')
+    </select>
 
 </mapper>

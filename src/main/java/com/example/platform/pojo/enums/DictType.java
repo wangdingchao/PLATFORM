@@ -299,7 +299,10 @@ public enum DictType implements BaseEnum {
     IDS_INVOICE_TAITOU("发票抬头"),
     IDS_SYS_CLIENT_SCOPE("客户端作用域 (system系统模块)"),
     IDS_SYS_CLIENT_GRANT_TYPE("客户端授权方式 (system系统模块)"),
-    IDS_MC_COUPON_TYPE("优惠券类型");
+    IDS_MC_COUPON_TYPE("优惠券类型"),
+
+    BIG_SCREEN("大屏"),
+    MINI_APP("小程序");
 
     private String message;
 

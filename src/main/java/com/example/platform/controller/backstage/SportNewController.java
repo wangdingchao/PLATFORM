@@ -1,6 +1,6 @@
 package com.example.platform.controller.backstage;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+//import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.platform.dto.JsonResult;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.SportNew;
@@ -25,51 +25,51 @@ public class SportNewController {
 
     // 分页展示页面, 默认从第一页开始展示，一页展示十条信息。
     // Page display, default from the first page display, one page display ten news information.
-    @RequestMapping(value = "/allPage", method = RequestMethod.GET)
-    public JsonResult allPage(@RequestParam(defaultValue = "1") int page,
-                              @RequestParam(defaultValue = "10") int size) throws BizException {
-        Page<SportNew> sportNewPage = sportNewService.findSportNewPage(page, size);
-        return JsonResult.success(sportNewPage);
-    }
+//    @RequestMapping(value = "/allPage", method = RequestMethod.GET)
+//    public JsonResult allPage(@RequestParam(defaultValue = "1") int page,
+//                              @RequestParam(defaultValue = "10") int size) throws BizException {
+//        Page<SportNew> sportNewPage = sportNewService.findSportNewPage(page, size);
+//        return JsonResult.success(sportNewPage);
+//    }
 
     // 在页面添加一个体育新闻
     // Adding an athlete on the page
-    @RequestMapping(value = "/addSportNew", method = RequestMethod.POST)
-    public JsonResult addAthlete(@RequestBody SportNew sportNew) {
-        sportNewService.addSportNew(sportNew);
-        return JsonResult.success();
-    }
+//    @RequestMapping(value = "/addSportNew", method = RequestMethod.POST)
+//    public JsonResult addAthlete(@RequestBody SportNew sportNew) {
+//        sportNewService.addSportNew(sportNew);
+//        return JsonResult.success();
+//    }
 
     // 在页面上更新运动员
     // Update a sport new on the page
-    @RequestMapping(value = "updateSportNew", method = RequestMethod.PUT)
-    public JsonResult updateSportNew(@RequestBody SportNew sportNew) {
-        sportNewService.updateSportNewById(sportNew);
-        return JsonResult.success();
-    }
-
-    // 在页面上删除体育新闻
-    // Delete a sport new on the page
-    @RequestMapping(value = "deleteSportNew", method = RequestMethod.DELETE)
-    public JsonResult deleteSportNew(Integer aid) {
-        sportNewService.deleteSportNewById(aid);
-        return JsonResult.success();
-    }
-
-    // 在页面上找到一条新闻
-    // Query a sport new by id
-    @RequestMapping(value = "/findSportNewById", method = RequestMethod.GET)
-    public JsonResult findSportNewById(Integer snId) {
-        SportNew sportNew = sportNewService.findSportNewById(snId);
-        return JsonResult.success(sportNew);
-    }
-
-    // 展示所有新闻
-    // Paging all news
-    @RequestMapping(value = "/findAllSportNew", method = RequestMethod.GET)
-    public JsonResult findAllSportNew() {
-        List<SportNew> all = sportNewService.findAllSportNew();
-        return JsonResult.success(all);
-    }
+//    @RequestMapping(value = "updateSportNew", method = RequestMethod.PUT)
+//    public JsonResult updateSportNew(@RequestBody SportNew sportNew) {
+//        sportNewService.updateSportNewById(sportNew);
+//        return JsonResult.success();
+//    }
+//
+//    // 在页面上删除体育新闻
+//    // Delete a sport new on the page
+//    @RequestMapping(value = "deleteSportNew", method = RequestMethod.DELETE)
+//    public JsonResult deleteSportNew(Integer aid) {
+//        sportNewService.deleteSportNewById(aid);
+//        return JsonResult.success();
+//    }
+//
+//    // 在页面上找到一条新闻
+//    // Query a sport new by id
+//    @RequestMapping(value = "/findSportNewById", method = RequestMethod.GET)
+//    public JsonResult findSportNewById(Integer snId) {
+//        SportNew sportNew = sportNewService.findSportNewById(snId);
+//        return JsonResult.success(sportNew);
+//    }
+//
+//    // 展示所有新闻
+//    // Paging all news
+//    @RequestMapping(value = "/findAllSportNew", method = RequestMethod.GET)
+//    public JsonResult findAllSportNew() {
+//        List<SportNew> all = sportNewService.findAllSportNew();
+//        return JsonResult.success(all);
+//    }
 
 }

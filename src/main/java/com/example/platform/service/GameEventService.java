@@ -1,6 +1,6 @@
 package com.example.platform.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.platform.dto.PagedList;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.GameEvent;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public interface GameEventService {
 
 
-//    Page<GameEvent> findPage(int page, int size) throws BizException;
+    PagedList<GameEvent> findPage(String title,int page, int size) throws BizException;
 //
 //    void addGameEvent(GameEvent gameEvent);
 //

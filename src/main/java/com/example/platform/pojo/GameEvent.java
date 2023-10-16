@@ -1,6 +1,5 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -11,11 +10,11 @@ import java.util.Date;
  */
 @Data
 public class GameEvent {
-    @TableId
-    private Integer geID; // gameEvent id
+//    @TableId
+    private Integer gid; // gameEvent id
     private String title; // Title for the game
-    private Date signUp; // Sign up time;
-    private Date gameStart; // game start time
+    private Date signUpTime; // Sign up time;
+    private Date gameStartTime; // game start time
     private String roadMap; // game road map for the game
     private String rule; // game rule
 

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -33,6 +34,8 @@ public interface AuthMapper {
     List<String> findByRole(@Param("roleId") String roleId);
 
     List<String> findByUser(@Param("userId") String userId, @Param("scope") MenuScope scope);
+
+    List<Map> findTestUser();
 
 //    CallCenterAgent findByAgent(@Param("userId") String userId);
 

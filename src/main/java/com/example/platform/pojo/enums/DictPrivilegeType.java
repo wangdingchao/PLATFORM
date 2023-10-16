@@ -24,7 +24,13 @@ public enum DictPrivilegeType implements BaseEnum {
     ORDER_TYPE("订单类型", DictType.ORDER_TYPE),
     CMS_DEALER_ENUMERATE("经销商", DictType.CMS_DEALER_ENUMERATE),
     CMS_COLUMN("cms栏目", DictType.CMS_COLUMN),
-    HHR_SOURCE("合伙人所属渠道", DictType.KHLY);
+    HHR_SOURCE("合伙人所属渠道", DictType.KHLY),
+
+//  -------  START ADD ------------
+    MINI_APP_MANAGE("小程序管理", DictType.MINI_APP),
+    BIG_SCREEN_MANAGE("大屏管理",DictType.BIG_SCREEN),
+    INFORMATION_MANAGE("")
+    ;
 
     private String message;
 

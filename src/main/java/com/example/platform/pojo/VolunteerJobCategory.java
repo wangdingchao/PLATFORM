@@ -1,6 +1,5 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -8,7 +7,7 @@ import lombok.Data;
  */
 @Data
 public class VolunteerJobCategory {
-    @TableId
+//    @TableId
     private Integer vjcId; // vjcid in system, Unique and not empty(Primary Key)
     private String vjcName; // vjc name,
     private String jobDuties; // Job duties

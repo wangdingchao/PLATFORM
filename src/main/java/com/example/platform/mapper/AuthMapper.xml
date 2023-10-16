@@ -12,6 +12,10 @@
         </foreach>
     </select>
 
+    <select id="findTestUser" resultType="string">
+        select id from sys_user where VALUE  = '1'
+    </select>
+
     <select id="findByRole" resultType="string">
           select PRIVILEGE from SYS_ROLE_PRIVILEGE where ROLE_ID = #{roleId}
     </select>
@@ -49,7 +53,7 @@
         </if>
     </select>
 
-    <select id="findDataPowerByPositionId" resultType="com.sogal.common.privilege.DataPower">
+    <select id="findDataPowerByPositionId" resultType="com.example.platform.pojo.DataPower">
         SELECT POSITION_ID, SERVICE_TYPE, DATA_PRIVILEGE FROM SYS_DATA_PRIVILEGE WHERE POSITION_ID = #{positionId};
     </select>
 

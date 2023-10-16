@@ -1,6 +1,5 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +11,7 @@ import java.util.Date;
 @Data
 public class Athlete {
 
-    @TableId
+//    @TableId
     private Integer aid; // Athlete's pid in system, Unique and not empty(Primary Key)
     private int age; // Athlete's age
     private String sex; // Athlete's gender
@@ -26,7 +25,7 @@ public class Athlete {
     private Date registrationTime; // Athlete registration time
     private Date updateTime; // Athlete update Time;
 
-    @TableId
+//    @TableId
     private MarathonCategory marathonCategory; // Athletes sign up for different types of marathons
 
 }

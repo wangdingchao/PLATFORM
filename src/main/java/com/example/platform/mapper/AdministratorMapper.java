@@ -1,14 +1,14 @@
 package com.example.platform.mapper;
 
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+//import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.platform.pojo.Administrator;
 import com.example.platform.pojo.Permission;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface AdministratorMapper extends BaseMapper<Administrator> {
+public interface AdministratorMapper  {
 
     // 查询用户详情
     // Query administrator's details

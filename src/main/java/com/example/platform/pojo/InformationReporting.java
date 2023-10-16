@@ -1,6 +1,6 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
+
 import lombok.Data;
 
 /**
@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class InformationReporting {
 
-    @TableId
+//    @TableId
     private Integer irId; // Information Reporting ID, primary key.
     private String imgAddress; // the address of the image.
     private String remark; // remark of the information.

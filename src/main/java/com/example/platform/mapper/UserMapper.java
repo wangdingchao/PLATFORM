@@ -1,10 +1,12 @@
 package com.example.platform.mapper;
 
+import com.example.platform.pojo.MiniAppUser;
 import com.example.platform.pojo.UserDTO;
 import com.example.platform.pojo.UserType;
 //import com.sogal.oauth.domain.MiniAppUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -69,7 +71,7 @@ public interface UserMapper {
 
     void  insert(UserDTO user);
 
-//    void insertMiniAppUser(MiniAppUser miniAppUser);
-//
-//    MiniAppUser findMiniAppUserByOpenId(@Param("openId") String openId);
+    void insertMiniAppUser(MiniAppUser miniAppUser);
+
+    MiniAppUser findMiniAppUserByOpenId(@Param("openId") String openId);
 }

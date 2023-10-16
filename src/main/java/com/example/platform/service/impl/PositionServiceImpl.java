@@ -1,7 +1,6 @@
 
 package com.example.platform.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.example.platform.Constants;
 import com.example.platform.mapper.AuthMapper;
 import com.example.platform.mapper.OrganizationMapper;
@@ -17,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -487,7 +487,7 @@ public class PositionServiceImpl implements IPositionService {
                 resultIds.add(orgId);
                 List<String> extraOrgIds = new ArrayList<>();
 //                        privilegeOrgRelationMapper.selectExtraOrgIdsByPositionIdAndServiceType(positionId, serviceType);
-                if(CollectionUtils.isNotEmpty(extraOrgIds)){
+                if(!CollectionUtils.isEmpty(extraOrgIds)){
                     resultIds.addAll(extraOrgIds);
                 }
                 break;

@@ -1,6 +1,5 @@
 package com.example.platform.service.impl;
 
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.example.platform.Constants;
 import com.example.platform.error.GlobalErrorCode;
 import com.example.platform.exception.BizException;

@@ -1,11 +1,11 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.example.platform.utils.StringUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.servlet.http.HttpServletRequest;

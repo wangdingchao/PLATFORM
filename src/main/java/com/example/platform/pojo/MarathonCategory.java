@@ -1,6 +1,6 @@
 package com.example.platform.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
+//import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public class MarathonCategory {
-    @TableId
+//    @TableId
     private Integer id; // Marathon category id;
     private String categoryName; // Marathon category name;
 

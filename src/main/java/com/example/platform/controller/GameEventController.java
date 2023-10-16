@@ -1,6 +1,5 @@
 package com.example.platform.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.platform.exception.BizException;
 import com.example.platform.pojo.GameEvent;
 import com.example.platform.dto.JsonResult;
