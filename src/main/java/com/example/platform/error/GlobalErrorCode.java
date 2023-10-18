@@ -68,10 +68,12 @@ public enum GlobalErrorCode implements BaseErrorCode{
             this.message = message;
         }
 
+        @Override
         public String getCode() {
             return this.code;
         }
 
+        @Override
         public String getMessage() {
             return this.message;
         }
